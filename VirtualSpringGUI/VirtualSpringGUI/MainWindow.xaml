@@ -1,7 +1,8 @@
 ﻿<Window x:Class="VirtualSpringGUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Virtual Spring System" Height="363" Width="749">
+        Title="Virtual Spring System" Height="363" Width="749"
+        Closing="Window_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />

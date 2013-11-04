@@ -24,6 +24,7 @@ namespace VirtualSpringGUI
         public MainWindow()
         {
             InitializeComponent();
+            this.startButton.IsChecked = true;
         }
 
         void pr_NewString(object sender, PortEventArgs e)
@@ -50,6 +51,11 @@ namespace VirtualSpringGUI
                 pr.Stop();
             }
 
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.startButton.IsChecked = false;
         }
 
 
