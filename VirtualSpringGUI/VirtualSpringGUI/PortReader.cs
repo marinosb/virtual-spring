@@ -10,11 +10,17 @@ namespace VirtualSpringGUI
     class PortReader
     {
         private long stop = 0;
+        SerialPort port;
+
+        public PortReader()
+        {
+            port = new SerialPort("COM7", 9600);
+            port.Open();
+        }
 
         public void loop()
         {
-            SerialPort port = new SerialPort("COM7", 9600);
-            port.Open();
+            
             while (true)
             {
                 String s=port.ReadLine();
@@ -40,6 +46,13 @@ namespace VirtualSpringGUI
         {
             stop = 1;
         }
+
+        public void Write(string data)
+        {
+            if(port.IsOpen)
+                port.WriteLine(data);
+        }
+
     }
 
     public class PortEventArgs : EventArgs

@@ -40,10 +40,15 @@ namespace VirtualSpringGUI
         {
             if (this.startButton.IsChecked == true)
             {
-                pr = new PortReader();
-                pr.NewString += new EventHandler<PortEventArgs>(pr_NewString);
-                Thread t = new Thread(pr.loop);
-                t.Start();
+                try
+                {
+                    InitializePortReader();
+                }
+                catch (Exception ex)
+                {
+                    this.startButton.IsChecked = false;
+                    MessageBox.Show(ex.ToString(),"Error");
+                }
             }
             else
             {
@@ -53,9 +58,24 @@ namespace VirtualSpringGUI
 
         }
 
+        private void InitializePortReader()
+        {
+                pr = new PortReader();
+                pr.NewString += new EventHandler<PortEventArgs>(pr_NewString);
+                Thread t = new Thread(pr.loop);
+                //t.IsBackground = true;
+                t.Start();
+        }
+
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.startButton.IsChecked = false;
+        }
+
+        private void slider1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            pr.Write(string.Format("{0}",(int)slider1.Value));
         }
 
 
