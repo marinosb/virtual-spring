@@ -21,7 +21,13 @@ void setup()
 }
 
 void loop()
-{  
+{
+  updatePosition();
+  performPeriodicCommunication();
+}
+
+void updatePosition()
+{
   int newValue=readValue();
   switch(newValue-lastValue)
   {
@@ -39,16 +45,6 @@ void loop()
     
   }
   lastValue=newValue;
-  
-  unsigned long currentMillis=millis();
-  if(currentMillis-lastTriggerMillis>triggerIntervalMillis)
-  {
-    Serial.print(pos);
-    //Serial.print(" E:");
-    //Serial.print(errors);
-    //Serial.print("\n");
-    lastTriggerMillis=currentMillis;
-  }
 }
 
 int readValue()
@@ -56,5 +52,18 @@ int readValue()
   int greyCode=(digitalRead(posB)<<1)|digitalRead(posA);
   //Serial.println(greyCode);
   return greyCodeConversion[greyCode];
+}
+
+void performPeriodicCommunication()
+{
+  unsigned long currentMillis=millis();
+  if(currentMillis-lastTriggerMillis>triggerIntervalMillis)
+  {
+    Serial.print(pos);
+    //Serial.print(" E:");
+    //Serial.print(errors);
+    Serial.print("\n");
+    lastTriggerMillis=currentMillis;
+  }
 }
 
