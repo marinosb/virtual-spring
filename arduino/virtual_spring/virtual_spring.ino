@@ -8,11 +8,14 @@ const int grayCodeConversion[]={0,1,3,2};
 int lastValue=0;
 int pos=0;
 
+unsigned long lastTriggerMillis=0;
+int triggerIntervalMillis=100;
+
 void setup()
 {
   Serial.begin(9600);
-  pinMode(posA, INPUT);
-  pinMode(posB, INPUT);
+  pinMode(posA, INPUT_PULLUP);
+  pinMode(posB, INPUT_PULLUP);
 }
 
 void loop()
@@ -33,9 +36,11 @@ void loop()
   }
   lastValue=newValue;
   
-  if(millis()%1000)
+  unsigned long currentMillis=millis();
+  if(currentMillis-lastTriggerMillis>triggerIntervalMillis)
   {
     Serial.println(pos);
+    lastTriggerMillis=currentMillis;
   }
 }
 
@@ -43,3 +48,4 @@ int readValue()
 {
   return digitalRead(posA);
 }
+
