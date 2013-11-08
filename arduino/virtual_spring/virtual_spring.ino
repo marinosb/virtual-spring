@@ -16,7 +16,7 @@ int lastCValue=0;
 int realRevolutions=0;
 
 unsigned long lastTriggerMillis=0;
-int triggerIntervalMillis=2000;
+int triggerIntervalMillis=200;
 
 int errors=0;
 
@@ -100,13 +100,14 @@ void processSerialInput()
     if(x=='v')
     {
       int incomingDutyCycle = Serial.parseInt();
-     
+     autonomous=false;
      analogWrite(velocityPin, incomingDutyCycle);
     }
     else if(x=='r')
     {
       realRevolutions=0;
       pos=0;
+      autonomous=true;
     }
     else if(x=='s')
     {
@@ -124,7 +125,7 @@ void performOutput()
     Serial.print(pos);
     Serial.print(" R:");
     Serial.print(realRevolutions);
-    Serial.print("\n");
+    Serial.print(" D:");
     Serial.print(rotationDirection);
     Serial.print("\n");
     lastTriggerMillis=currentMillis;
