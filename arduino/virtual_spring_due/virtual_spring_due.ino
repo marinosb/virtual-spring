@@ -7,14 +7,15 @@ int velocityPin=DAC0;
 
 const int greyCodeConversion[]={0,1,3,2};
 
-int lastValue=0;
+boolean lastValueA=0;
+boolean lastValueB=0;
 long pos=0;
 
 int lastCValue=0;
 int realRevolutions=0;
 
 unsigned long lastTriggerMillis=0;
-int triggerIntervalMillis=200;
+int triggerIntervalMillis=1000;
 
 int errors=0;
 
@@ -28,6 +29,8 @@ int rotationDirection=0;
 int zeroTorque=127;
 
 int stiffness=10;
+
+int lastTorque=zeroTorque;
 
 void setup()
 {
@@ -49,36 +52,38 @@ void loop()
 
 void applyTorque()
 {
-  int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-((pos*64)/stiffness), 150));
-  analogWrite(torquePin, torque);
+  int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-((pos*10)/stiffness), 254));
+  
+  //save us tjhe extra write
+  if(torque!=lastTorque)
+  {
+    analogWrite(torquePin, torque);
+    lastTorque=torque;
+  }
+  
 }
 
 void updatePosition()
 {
   //A&B
-  int newValue=readValue();
-  if(newValue!=lastValue)
+  boolean newValueA=digitalRead(posA);
+  if(newValueA!=lastValueA)
   {
-    if(newValue==2 && lastValue==1)
+    boolean newValueB=digitalRead(posB);
+    if(!newValueA && (newValueB!=lastValueB))
     {
-      pos++;
-      rotationDirection=1;
+      rotationDirection=newValueB?1:-1;
+      pos+=rotationDirection;
     }
-    else if(newValue==0 && lastValue==1)
-    {
-      pos--;
-      rotationDirection=-1;
-    }
+    lastValueB=newValueB;
   }
-  lastValue=newValue;
+  lastValueA=newValueA;
   
   //C
   int newCValue=digitalRead(posC);
-  if(newCValue!=lastCValue && newCValue)
+  if(newCValue!=lastCValue && !newCValue)
   {
-    //pos=0;
     realRevolutions+=rotationDirection;
-    //realRevolutions++;
   }
   lastCValue=newCValue;
 }
@@ -110,6 +115,11 @@ void processSerialInput()
     else if(x=='s')
     {
       stiffness = Serial.parseInt();
+    }
+    else if(x=='p')
+    {
+      int posOffset=Serial.parseInt();
+      pos+=posOffset;
     }
      Serial.read();  //newline
   } 
