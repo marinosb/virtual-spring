@@ -103,6 +103,17 @@ namespace VirtualSpringGUI
             }
         }
 
+        private void toggleButton1_Click(object sender, RoutedEventArgs e)
+        {
+            int positionOffset=0;
+            if(int.TryParse(this.positionOffsetTextBox.Text, out positionOffset))
+            {
+                pr.Write(string.Format("p{0}", positionOffset));
+                this.positionOffsetTextBox.Text = "";
+            }
+            else MessageBox.Show("Invalid Position Offset");
+        }
+
 
     }
 }
