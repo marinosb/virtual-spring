@@ -19,5 +19,6 @@
         <Slider Height="23" HorizontalAlignment="Left" IsSnapToTickEnabled="True" Margin="133,339,0,0" Maximum="600" Minimum="5" Name="stiffnessSlider" TickFrequency="5" VerticalAlignment="Top" Width="206" ValueChanged="stiffnessSlider_ValueChanged" Value="30" />
         <Label Content="Stiffness" Height="28" HorizontalAlignment="Left" Margin="30,334,0,0" Name="label4" VerticalAlignment="Top" />
         <Button Content="Reset Origin" Focusable="False" Height="45" HorizontalAlignment="Left" Margin="183,242,0,0" VerticalAlignment="Top" Width="91" Click="resetOrigin_Clicked" />
+        <Label Content="Label" Height="28" HorizontalAlignment="Left" Margin="133,368,0,0" Name="stiffness" VerticalAlignment="Top" />
     </Grid>
 </Window>

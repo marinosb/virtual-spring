@@ -49,7 +49,7 @@ void loop()
 
 void applyTorque()
 {
-  int torque=abs(realRevolutions)>20 ? zeroTorque:max(80,min(zeroTorque-((pos*64)/stiffness), 180));
+  int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-((pos*64)/stiffness), 150));
   analogWrite(torquePin, torque);
 }
 

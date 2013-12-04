@@ -16,7 +16,7 @@ int lastCValue=0;
 int realRevolutions=0;
 
 unsigned long lastTriggerMillis=0;
-int triggerIntervalMillis=200;
+int triggerIntervalMillis=2000;
 
 int errors=0;
 
@@ -27,7 +27,7 @@ boolean autonomous=true;
 
 int rotationDirection=0;
 
-int zeroTorque=129;
+int zeroTorque=127;
 
 int stiffness=10;
 
@@ -51,7 +51,7 @@ void loop()
 
 void applyTorque()
 {
-  int torque=abs(realRevolutions)>5 ? zeroTorque:max(80,min(zeroTorque-((pos)/stiffness), 180));
+  int torque=abs(realRevolutions)>20 ? zeroTorque:max(80,min(zeroTorque-((pos*64)/stiffness), 180));
   analogWrite(torquePin, torque);
 }
 

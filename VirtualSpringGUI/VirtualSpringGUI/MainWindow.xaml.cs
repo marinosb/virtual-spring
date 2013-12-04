@@ -95,7 +95,12 @@ namespace VirtualSpringGUI
 
         private void stiffnessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if(pr!=null) pr.Write(string.Format("s{0}", (int)stiffnessSlider.Value));
+            
+            if (pr != null)
+            {
+                this.stiffness.Content = stiffnessSlider.Value;
+                pr.Write(string.Format("s{0}", (int)stiffnessSlider.Value));
+            }
         }
 
 
