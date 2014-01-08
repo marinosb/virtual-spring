@@ -3,9 +3,7 @@ int posB = 50;
 int posC = 48;
 
 int torquePin=DAC0;
-int velocityPin=DAC0;
-
-const int greyCodeConversion[]={0,1,3,2};
+int velocityPin=A7;
 
 boolean lastValueA=0;
 boolean lastValueB=0;
@@ -15,7 +13,7 @@ int lastCValue=0;
 int realRevolutions=0;
 
 unsigned long lastTriggerMillis=0;
-int triggerIntervalMillis=1000;
+int triggerIntervalMillis=2000;
 
 int errors=0;
 
@@ -40,11 +38,13 @@ void setup()
   pinMode(posC, INPUT_PULLUP);
   pinMode(torquePin, OUTPUT);
   analogWrite(torquePin, zeroTorque);
+  //pinMode(velocityPin, INPUT);
 }
 
 void loop()
 {
   updatePosition();
+  //readVelocityAnalog();
   if(autonomous) applyTorque();
   if(serial) performOutput();
   if(serial) processSerialInput();
@@ -52,15 +52,21 @@ void loop()
 
 void applyTorque()
 {
-  int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-((pos*10)/stiffness), 254));
+  int adjPos=pos;
+  int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-((adjPos*10)/stiffness), 254));
   
-  //save us tjhe extra write
+  //save us the extra write
   if(torque!=lastTorque)
   {
     analogWrite(torquePin, torque);
     lastTorque=torque;
   }
   
+}
+
+void readVelocityAnalog()
+{
+  velocity=analogRead(velocityPin);
 }
 
 void updatePosition()
@@ -88,13 +94,6 @@ void updatePosition()
   lastCValue=newCValue;
 }
 
-int readValue()
-{
-  int greyCode=(digitalRead(posB)<<1)|digitalRead(posA);
-  //Serial.println(greyCode);
-  return greyCodeConversion[greyCode];
-}
-
 void processSerialInput()
 {
  if(Serial.available()>0)
@@ -104,7 +103,7 @@ void processSerialInput()
     {
       int incomingDutyCycle = Serial.parseInt();
      autonomous=false;
-     analogWrite(velocityPin, incomingDutyCycle);
+     analogWrite(torquePin, incomingDutyCycle);
     }
     else if(x=='r')
     {
@@ -135,6 +134,8 @@ void performOutput()
     Serial.print(realRevolutions);
     Serial.print(" D:");
     Serial.print(rotationDirection);
+    //Serial.print(" V:");
+    //Serial.print(velocity);
     Serial.print("\n");
     lastTriggerMillis=currentMillis;
   }
