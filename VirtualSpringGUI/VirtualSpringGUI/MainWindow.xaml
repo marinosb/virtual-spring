@@ -10,7 +10,7 @@
             <ColumnDefinition Width="467*" />
             <ColumnDefinition Width="260*" />
         </Grid.ColumnDefinitions>
-        <Label FontSize="60" Grid.ColumnSpan="2" Height="117" HorizontalAlignment="Left" Margin="91,119,0,0" Name="positionLabel" VerticalAlignment="Top" Width="612" FontFamily="Courier New" Content="0" />
+        <Label FontSize="60" Grid.ColumnSpan="2" Height="117" Margin="91,119,23,0" Name="positionLabel" VerticalAlignment="Top" FontFamily="Courier New" Content="0" />
         <Label Content="Position:" Height="28" HorizontalAlignment="Left" Margin="91,85,0,0" Name="label1" VerticalAlignment="Top" />
         <ToggleButton Focusable="False" Content="Start" Height="45" HorizontalAlignment="Left" Margin="59,242,0,0" Name="startButton" VerticalAlignment="Top" Width="91" Checked="start_toggled" Unchecked="start_toggled" />
         <Label Content="Virtual Spring System" Grid.ColumnSpan="2" Height="61" HorizontalAlignment="Left" Margin="59,12,0,0" Name="label2" VerticalAlignment="Top" Width="408" FontSize="22" Foreground="#FF18A700" FontWeight="SemiBold" />

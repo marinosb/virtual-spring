@@ -14,7 +14,7 @@ namespace VirtualSpringGUI
 
         public PortReader()
         {
-            port = new SerialPort("COM9", 9600);
+            port = new SerialPort("COM9", 115200);
             port.Open();
         }
 

@@ -13,7 +13,7 @@ int lastCValue=0;
 int realRevolutions=0;
 
 unsigned long lastTriggerMillis=0;
-int triggerIntervalMillis=200;
+int triggerIntervalMillis=1000;
 
 int errors=0;
 
@@ -26,7 +26,7 @@ int rotationDirection=0;
 
 int zeroTorque=127;
 
-int stiffness=10;
+int stiffness=90;
 int dampingFactor=3;
 
 int lastTorque=zeroTorque;
@@ -38,7 +38,7 @@ unsigned long lastVelocitySampleMillis;
 
 void setup()
 {
-  if(serial) Serial.begin(9600);
+  if(serial) Serial.begin(115200);
   pinMode(posA, INPUT_PULLUP);
   pinMode(posB, INPUT_PULLUP);
   pinMode(posC, INPUT_PULLUP);
