@@ -61,7 +61,7 @@ void applyTorque()
 {
   int adjPos=pos;
   int linearComponent=((adjPos*10)/stiffness);
-  int velocityComponent= calculatedVelocityTicks/dampingFactor;
+  int velocityComponent= calculatedVelocityTicks/(dampingFactor/100);
   
   
   int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-linearComponent+velocityComponent, 254));
