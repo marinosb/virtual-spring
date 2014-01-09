@@ -109,9 +109,18 @@ namespace VirtualSpringGUI
             if(int.TryParse(this.positionOffsetTextBox.Text, out positionOffset))
             {
                 pr.Write(string.Format("p{0}", positionOffset));
-                this.positionOffsetTextBox.Text = "";
+                //this.positionOffsetTextBox.Text = "";
             }
             else MessageBox.Show("Invalid Position Offset");
+        }
+
+        private void dampingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (pr != null)
+            {
+                this.dampingValue.Content = dampingSlider.Value;
+                pr.Write(string.Format("d{0}", (int)dampingSlider.Value));
+            }
         }
 
 

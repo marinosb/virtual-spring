@@ -13,7 +13,7 @@ int lastCValue=0;
 int realRevolutions=0;
 
 unsigned long lastTriggerMillis=0;
-int triggerIntervalMillis=2000;
+int triggerIntervalMillis=200;
 
 int errors=0;
 
@@ -27,8 +27,14 @@ int rotationDirection=0;
 int zeroTorque=127;
 
 int stiffness=10;
+int dampingFactor=3;
 
 int lastTorque=zeroTorque;
+
+//veclocity calculation
+long calculatedVelocityTicks;
+long velocityLastPos;
+unsigned long lastVelocitySampleMillis;
 
 void setup()
 {
@@ -45,6 +51,7 @@ void loop()
 {
   updatePosition();
   //readVelocityAnalog();
+  calculateVelocity();
   if(autonomous) applyTorque();
   if(serial) performOutput();
   if(serial) processSerialInput();
@@ -53,13 +60,29 @@ void loop()
 void applyTorque()
 {
   int adjPos=pos;
-  int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-((adjPos*10)/stiffness), 254));
+  int linearComponent=((adjPos*10)/stiffness);
+  int velocityComponent= calculatedVelocityTicks/dampingFactor;
+  
+  
+  int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-linearComponent+velocityComponent, 254));
   
   //save us the extra write
   if(torque!=lastTorque)
   {
     analogWrite(torquePin, torque);
     lastTorque=torque;
+  }
+  
+}
+
+void calculateVelocity()
+{
+  unsigned long currentTimeMillis=millis();
+  if( abs(currentTimeMillis-lastVelocitySampleMillis) >10 )
+  {
+    lastVelocitySampleMillis=currentTimeMillis;
+    calculatedVelocityTicks=(pos-velocityLastPos)+0*calculatedVelocityTicks;
+    velocityLastPos=pos;
   }
   
 }
@@ -120,6 +143,10 @@ void processSerialInput()
       int posOffset=Serial.parseInt();
       pos+=posOffset;
     }
+    else if(x=='d')
+    {
+      dampingFactor=Serial.parseInt();
+    }
      Serial.read();  //newline
   } 
 }
@@ -136,6 +163,8 @@ void performOutput()
     Serial.print(rotationDirection);
     //Serial.print(" V:");
     //Serial.print(velocity);
+    Serial.print(" S:");
+    Serial.print(calculatedVelocityTicks);
     Serial.print("\n");
     lastTriggerMillis=currentMillis;
   }
