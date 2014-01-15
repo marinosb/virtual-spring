@@ -9,7 +9,7 @@ boolean lastValueA=0;
 boolean lastValueB=0;
 long pos=0;
 
-int lastCValue=0;
+int lastCValue=0; 
 int realRevolutions=0;
 
 unsigned long lastTriggerMillis=0;
@@ -35,6 +35,7 @@ int lastTorque=zeroTorque;
 long calculatedVelocityTicks;
 long velocityLastPos;
 unsigned long lastVelocitySampleMillis;
+long velocitySampleTime=10;
 
 void setup()
 {
@@ -63,7 +64,6 @@ void applyTorque()
   int linearComponent=((adjPos*10)/stiffness);
   int velocityComponent= calculatedVelocityTicks/(dampingFactor/100);
   
-  
   int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-linearComponent+velocityComponent, 254));
   
   //save us the extra write
@@ -78,7 +78,7 @@ void applyTorque()
 void calculateVelocity()
 {
   unsigned long currentTimeMillis=millis();
-  if( abs(currentTimeMillis-lastVelocitySampleMillis) >10 )
+  if( abs(currentTimeMillis-lastVelocitySampleMillis) >velocitySampleTime )  
   {
     lastVelocitySampleMillis=currentTimeMillis;
     calculatedVelocityTicks=(pos-velocityLastPos)+0*calculatedVelocityTicks;
