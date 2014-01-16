@@ -123,6 +123,15 @@ namespace VirtualSpringGUI
             }
         }
 
+        private void coulombSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (pr != null)
+            {
+                this.coulombValue.Content = coulombSlider.Value;
+                pr.Write(string.Format("c{0}", (int)coulombSlider.Value));
+            }
+        }
+
 
     }
 }

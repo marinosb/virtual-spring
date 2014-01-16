@@ -37,6 +37,8 @@ long velocityLastPos;
 unsigned long lastVelocitySampleMillis;
 long velocitySampleTime=10;
 
+int coulombFactor=0;
+
 void setup()
 {
   if(serial) Serial.begin(115200);
@@ -60,11 +62,13 @@ void loop()
 
 void applyTorque()
 {
+  //scale: 1/4
   int adjPos=pos;
-  int linearComponent=((adjPos*10)/stiffness);
-  int velocityComponent= calculatedVelocityTicks/(dampingFactor/100);
+  int linearComponent=((adjPos*4)/stiffness);
+  int velocityComponent= 400*calculatedVelocityTicks/dampingFactor;
+  int coulombComponent=sign(calculatedVelocityTicks)*coulombFactor;
   
-  int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-linearComponent+velocityComponent, 254));
+  int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 254));
   
   //save us the extra write
   if(torque!=lastTorque)
@@ -73,6 +77,11 @@ void applyTorque()
     lastTorque=torque;
   }
   
+}
+
+int sign(int x)
+{
+  return x>0?1:(x<0?-1:0);
 }
 
 void calculateVelocity()
@@ -146,6 +155,10 @@ void processSerialInput()
     else if(x=='d')
     {
       dampingFactor=Serial.parseInt();
+    }
+    else if(x=='c')
+    {
+      coulombFactor=Serial.parseInt();
     }
      Serial.read();  //newline
   } 
