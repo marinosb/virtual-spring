@@ -27,7 +27,7 @@ int rotationDirection=0;
 int zeroTorque=127;
 
 int stiffness=90;
-int dampingFactor=3;
+int dampingFactor=1000000;
 
 int lastTorque=zeroTorque;
 
@@ -38,6 +38,8 @@ unsigned long lastVelocitySampleMillis;
 long velocitySampleTime=10;
 
 int coulombFactor=0;
+
+boolean overspeed=false;
 
 void setup()
 {
@@ -65,10 +67,20 @@ void applyTorque()
   //scale: 1/4
   int adjPos=pos;
   int linearComponent=((adjPos*4)/stiffness);
-  int velocityComponent= calculatedVelocityTicks/(dampingFactor/400);
+  int velocityComponent= calculatedVelocityTicks/(dampingFactor/40);
   int coulombComponent=sign(calculatedVelocityTicks)*coulombFactor;
   
-  int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 254));
+  int torque=max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 254));
+  
+  if(realRevolutions>20 ||realRevolutions<-20)
+  {
+    overspeed=true;
+  }
+  
+  if(overspeed)
+  {
+    torque=zeroTorque;
+  }
   
   //save us the extra write
   if(torque!=lastTorque)
@@ -142,6 +154,7 @@ void processSerialInput()
       realRevolutions=0;
       pos=0;
       autonomous=true;
+      overspeed=false;
     }
     else if(x=='s')
     {
