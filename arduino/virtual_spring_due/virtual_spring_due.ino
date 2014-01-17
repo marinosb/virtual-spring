@@ -7,7 +7,7 @@ int velocityPin=A7;
 
 boolean lastValueA=0;
 boolean lastValueB=0;
-long pos=0;
+int pos=0;
 
 int lastCValue=0; 
 int realRevolutions=0;
@@ -65,7 +65,7 @@ void applyTorque()
   //scale: 1/4
   int adjPos=pos;
   int linearComponent=((adjPos*4)/stiffness);
-  int velocityComponent= 400*calculatedVelocityTicks/dampingFactor;
+  int velocityComponent= calculatedVelocityTicks/(dampingFactor/400);
   int coulombComponent=sign(calculatedVelocityTicks)*coulombFactor;
   
   int torque=abs(realRevolutions)>20 ? zeroTorque:max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 254));
