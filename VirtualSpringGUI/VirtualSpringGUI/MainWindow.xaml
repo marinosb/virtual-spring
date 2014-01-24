@@ -23,7 +23,7 @@
         <TextBox Height="24" HorizontalAlignment="Left" Margin="165,443,0,0" Name="positionOffsetTextBox" VerticalAlignment="Top" Width="57" />
         <Label Content="Position Adjustment" Height="28" HorizontalAlignment="Left" Margin="29,443,0,0" Name="label5" VerticalAlignment="Top" />
         <Button Content="Send" Focusable="False" Height="33" HorizontalAlignment="Right" Margin="0,437,181,0" Name="toggleButton1" VerticalAlignment="Top" Width="50" Click="toggleButton1_Click" />
-        <Slider Height="23" HorizontalAlignment="Right" IsSnapToTickEnabled="True" Margin="0,376,128,0" Maximum="1000" Minimum="1" Name="dampingSlider" TickFrequency="1" Value="5" VerticalAlignment="Top" Width="206" ValueChanged="dampingSlider_ValueChanged" />
+        <Slider Height="23" HorizontalAlignment="Right" IsSnapToTickEnabled="True" Margin="0,376,128,0" Maximum="10000" Minimum="1" Name="dampingSlider" TickFrequency="1" Value="5" VerticalAlignment="Top" Width="206" ValueChanged="dampingSlider_ValueChanged" />
         <Label Content="Damping" Height="28" HorizontalAlignment="Left" Margin="30,371,0,0" Name="label6" VerticalAlignment="Top"  />
         <Label Content="damping" Height="28" HorizontalAlignment="Left" Margin="345,376,0,0" Name="dampingValue" VerticalAlignment="Top" />
         <Slider Height="23" HorizontalAlignment="Left" IsSnapToTickEnabled="True" Margin="132,410,0,0" Maximum="15" Minimum="0" Name="coulombSlider" TickFrequency="1" Value="0" VerticalAlignment="Top" Width="206" ValueChanged="coulombSlider_ValueChanged"   />

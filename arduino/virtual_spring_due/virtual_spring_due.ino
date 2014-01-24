@@ -27,15 +27,15 @@ int rotationDirection=0;
 int zeroTorque=127;
 
 int stiffness=90;
-int dampingFactor=1000000;
+int dampingFactor=10000;
 
 int lastTorque=zeroTorque;
 
 //veclocity calculation
-long calculatedVelocityTicks;
-long velocityLastPos;
+int calculatedVelocityTicks;
+int velocityLastPos;
 unsigned long lastVelocitySampleMillis;
-long velocitySampleTime=10;
+int velocitySampleTime=10;
 
 int coulombFactor=0;
 
@@ -67,7 +67,7 @@ void applyTorque()
   //scale: 1/4
   int adjPos=pos;
   int linearComponent=((adjPos*4)/stiffness);
-  int velocityComponent= calculatedVelocityTicks/(dampingFactor/40);
+  int velocityComponent= (calculatedVelocityTicks)/dampingFactor;
   int coulombComponent=sign(calculatedVelocityTicks)*coulombFactor;
   
   int torque=max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 254));
@@ -102,7 +102,7 @@ void calculateVelocity()
   if( abs(currentTimeMillis-lastVelocitySampleMillis) >velocitySampleTime )  
   {
     lastVelocitySampleMillis=currentTimeMillis;
-    calculatedVelocityTicks=(pos-velocityLastPos)+0*calculatedVelocityTicks;
+    calculatedVelocityTicks=((pos-velocityLastPos)*40)+calculatedVelocityTicks/2;
     velocityLastPos=pos;
   }
   
