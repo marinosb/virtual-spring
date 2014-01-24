@@ -1,30 +1,14 @@
-int posA = 52;
-int posB = 50;
-int posC = 48;
-
 int torquePin=DAC0;
-int velocityPin=A7;
-
-boolean lastValueA=0;
-boolean lastValueB=0;
-int pos=0;
-
-int lastCValue=0; 
-int realRevolutions=0;
 
 unsigned long lastTriggerMillis=0;
 int triggerIntervalMillis=1000;
-
-int errors=0;
-
-int velocity=0;
 
 boolean serial=true;
 boolean autonomous=true;
 
 int rotationDirection=0;
 
-int zeroTorque=127;
+int zeroTorque=122;
 
 int stiffness=90;
 int dampingFactor=10000;
@@ -41,38 +25,75 @@ int coulombFactor=0;
 
 boolean overspeed=false;
 
+int zeroPosition=0;
+int cpuPosition=0;
+
+int error=0;
+
+unsigned long cachedMillis;
+
 void setup()
 {
+  delay(1000);
   if(serial) Serial.begin(115200);
-  pinMode(posA, INPUT_PULLUP);
-  pinMode(posB, INPUT_PULLUP);
-  pinMode(posC, INPUT_PULLUP);
+  
+  setupQam();
+  
   pinMode(torquePin, OUTPUT);
   analogWrite(torquePin, zeroTorque);
-  //pinMode(velocityPin, INPUT);
+}
+
+void setupQam()
+{
+        // Setup Quadrature Encoder with Marker
+  REG_PMC_PCER0 = (1<<27); // activate clock for TC0
+  REG_PMC_PCER0 = (1<<28); // activate clock for TC1
+  
+  // select XC0 as clock source and set capture mode
+  REG_TC0_CMR0 = 5; 
+  
+// activate quadrature encoder and position measure mode, no filters
+    REG_TC0_BMR = (1<<9)|(1<<8);
+    
+    // select XC0 as clock source and set capture mode
+    REG_TC0_CCR0 = (1<<2) | (1<<0) | (1<<14);
 }
 
 void loop()
 {
+  cachedMillis=millis();
   updatePosition();
-  //readVelocityAnalog();
+  
   calculateVelocity();
   if(autonomous) applyTorque();
   if(serial) performOutput();
   if(serial) processSerialInput();
 }
 
+void updatePosition()
+{
+  cpuPosition=((int)REG_TC0_CV0)-zeroPosition;
+  rotationDirection=((REG_TC0_QISR>>8)&0x1);
+  //error=(REG_TC0_QISR>>2)&0x1;
+}
+
+int sign(int x)
+{
+  return x>0?1:(x<0?-1:0);
+}
+
 void applyTorque()
 {
   //scale: 1/4
-  int adjPos=pos;
+  int adjPos=cpuPosition;
   int linearComponent=((adjPos*4)/stiffness);
-  int velocityComponent= (calculatedVelocityTicks)/dampingFactor;
+  int velocityComponent= (calculatedVelocityTicks * 40)/dampingFactor;
   int coulombComponent=sign(calculatedVelocityTicks)*coulombFactor;
   
   int torque=max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 254));
   
-  if(realRevolutions>20 ||realRevolutions<-20)
+  //safety checks
+  if(cpuPosition>1000 || cpuPosition<-1000 || error !=0 || calculatedVelocityTicks>100)
   {
     overspeed=true;
   }
@@ -91,51 +112,16 @@ void applyTorque()
   
 }
 
-int sign(int x)
-{
-  return x>0?1:(x<0?-1:0);
-}
-
 void calculateVelocity()
 {
-  unsigned long currentTimeMillis=millis();
+  unsigned long currentTimeMillis=cachedMillis;
   if( abs(currentTimeMillis-lastVelocitySampleMillis) >velocitySampleTime )  
   {
     lastVelocitySampleMillis=currentTimeMillis;
-    calculatedVelocityTicks=((pos-velocityLastPos)*40)+calculatedVelocityTicks/2;
-    velocityLastPos=pos;
+    calculatedVelocityTicks=(cpuPosition-velocityLastPos);
+    velocityLastPos=cpuPosition;
   }
   
-}
-
-void readVelocityAnalog()
-{
-  velocity=analogRead(velocityPin);
-}
-
-void updatePosition()
-{
-  //A&B
-  boolean newValueA=digitalRead(posA);
-  if(newValueA!=lastValueA)
-  {
-    boolean newValueB=digitalRead(posB);
-    if(!newValueA && (newValueB!=lastValueB))
-    {
-      rotationDirection=newValueB?1:-1;
-      pos+=rotationDirection;
-    }
-    lastValueB=newValueB;
-  }
-  lastValueA=newValueA;
-  
-  //C
-  int newCValue=digitalRead(posC);
-  if(newCValue!=lastCValue && !newCValue)
-  {
-    realRevolutions+=rotationDirection;
-  }
-  lastCValue=newCValue;
 }
 
 void processSerialInput()
@@ -151,8 +137,9 @@ void processSerialInput()
     }
     else if(x=='r')
     {
-      realRevolutions=0;
-      pos=0;
+      zeroPosition=cpuPosition+zeroPosition;
+      velocityLastPos=0;
+      cpuPosition=0;
       autonomous=true;
       overspeed=false;
     }
@@ -163,7 +150,7 @@ void processSerialInput()
     else if(x=='p')
     {
       int posOffset=Serial.parseInt();
-      pos+=posOffset;
+      zeroPosition+=posOffset;
     }
     else if(x=='d')
     {
@@ -177,22 +164,25 @@ void processSerialInput()
   } 
 }
 
+int perfSpeedTicks=0;
 void performOutput()
 {  
-  unsigned long currentMillis=millis();
+  perfSpeedTicks++;
+  unsigned long currentMillis=cachedMillis;
   if(currentMillis-lastTriggerMillis>triggerIntervalMillis)
   {
-    Serial.print(pos);
-    Serial.print(" R:");
-    Serial.print(realRevolutions);
+    if(perfSpeedTicks<100000) overspeed=true;
+    if(overspeed) Serial.print("!ERR ");
+    Serial.print(cpuPosition);
     Serial.print(" D:");
     Serial.print(rotationDirection);
-    //Serial.print(" V:");
-    //Serial.print(velocity);
     Serial.print(" S:");
     Serial.print(calculatedVelocityTicks);
+    Serial.print(" H:");
+    Serial.print(perfSpeedTicks);
     Serial.print("\n");
     lastTriggerMillis=currentMillis;
+    perfSpeedTicks=0;
   }
 }
 
