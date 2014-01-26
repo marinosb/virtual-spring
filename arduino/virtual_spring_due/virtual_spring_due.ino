@@ -53,7 +53,7 @@ void setupQam()
   REG_TC0_CMR0 = 5; 
   
 // activate quadrature encoder and position measure mode, no filters
-    REG_TC0_BMR = (1<<9)|(1<<8);
+    REG_TC0_BMR = (1<<9)|(1<<8); //|(1<<12)
     
     // select XC0 as clock source and set capture mode
     REG_TC0_CCR0 = (1<<2) | (1<<0) | (1<<14);
@@ -84,16 +84,16 @@ int sign(int x)
 
 void applyTorque()
 {
-  //scale: 1/4
+  //scale: 1/1
   int adjPos=cpuPosition;
-  int linearComponent=((adjPos*4)/stiffness);
-  int velocityComponent= (calculatedVelocityTicks * 40)/dampingFactor;
+  int linearComponent=((adjPos)/stiffness);
+  int velocityComponent= (calculatedVelocityTicks*10)/dampingFactor;
   int coulombComponent=sign(calculatedVelocityTicks)*coulombFactor;
   
   int torque=max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 254));
   
   //safety checks
-  if(cpuPosition>1000 || cpuPosition<-1000 || error !=0 || calculatedVelocityTicks>100)
+  if(cpuPosition>4000 || cpuPosition<-4000 || error !=0 || calculatedVelocityTicks>400)
   {
     overspeed=true;
   }
