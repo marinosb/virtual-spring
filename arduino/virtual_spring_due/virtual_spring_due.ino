@@ -8,7 +8,7 @@ boolean autonomous=true;
 
 int rotationDirection=0;
 
-int zeroTorque=122;
+int zeroTorque=1950;
 
 int stiffness=90;
 int dampingFactor=10000;
@@ -38,6 +38,8 @@ void setup()
   if(serial) Serial.begin(115200);
   
   setupQam();
+  
+  analogWriteResolution(12);
   
   pinMode(torquePin, OUTPUT);
   analogWrite(torquePin, zeroTorque);
@@ -86,11 +88,11 @@ void applyTorque()
 {
   //scale: 1/1
   int adjPos=cpuPosition;
-  int linearComponent=((adjPos)/stiffness);
-  int velocityComponent= (calculatedVelocityTicks*10)/dampingFactor;
-  int coulombComponent=sign(calculatedVelocityTicks)*coulombFactor;
+  int linearComponent=((adjPos*16)/stiffness);
+  int velocityComponent= (calculatedVelocityTicks*10*16)/dampingFactor;
+  int coulombComponent=(sign(calculatedVelocityTicks)*coulombFactor);
   
-  int torque=max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 254));
+  int torque=max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 4095));
   
   //safety checks
   if(cpuPosition>12000 || cpuPosition<-15500 || error !=0 || calculatedVelocityTicks>800)
