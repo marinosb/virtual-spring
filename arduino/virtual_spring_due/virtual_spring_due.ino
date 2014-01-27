@@ -93,7 +93,7 @@ void applyTorque()
   int torque=max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 254));
   
   //safety checks
-  if(cpuPosition>12000 || cpuPosition<-15500 || error !=0 || calculatedVelocityTicks>1000)
+  if(cpuPosition>12000 || cpuPosition<-15500 || error !=0 || calculatedVelocityTicks>800)
   {
     overspeed=true;
   }
