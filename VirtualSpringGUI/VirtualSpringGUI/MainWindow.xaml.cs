@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace VirtualSpringGUI
 {
@@ -130,6 +131,54 @@ namespace VirtualSpringGUI
                 this.coulombValue.Content = coulombSlider.Value;
                 pr.Write(string.Format("c{0}", (int)coulombSlider.Value));
             }
+        }
+
+        private void PresetClick(object sender, RoutedEventArgs e)
+        {
+            this.preset400.IsEnabled = false;
+            this.preset600.IsEnabled = false;
+            if (sender == this.preset400)
+            {
+                ApplyValues(140, 530);
+            }
+            else if (sender == this.preset600)
+            {
+                ApplyValues(96, 575);
+            }
+        }
+        
+
+
+        private void ApplyValues(int stiffness, int damping)
+        {
+            new Task(() => {
+                Console.WriteLine("Starting stiffness:{0} damping:{1}", stiffness, damping);
+                bool stop=false;
+                while (!stop)
+                {
+                    Thread.Sleep(100);
+                    Dispatcher.BeginInvoke(new Action(() => {
+                        stop = (this.stiffnessSlider.Value == stiffness && this.dampingSlider.Value == damping);
+                            
+
+                        this.stiffnessSlider.Value += Sign((int)(stiffness - this.stiffnessSlider.Value));
+                        this.dampingSlider.Value += Sign((int)(damping - this.dampingSlider.Value));
+                    }));
+                    
+                }
+
+                Console.WriteLine("Terminating stiffness:{0} damping:{1}", stiffness, damping);
+                Dispatcher.BeginInvoke(new Action(() => {
+                    this.preset400.IsEnabled = true;
+                    this.preset600.IsEnabled = true;
+                }));
+            }).Start();
+            
+        }
+
+        private int Sign(int value)
+        {
+            return value > 0 ? 1 : value < 0 ? -1 : 0;
         }
 
 

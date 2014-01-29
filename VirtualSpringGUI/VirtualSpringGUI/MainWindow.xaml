@@ -29,5 +29,7 @@
         <Slider Height="23" HorizontalAlignment="Left" IsSnapToTickEnabled="True" Margin="132,410,0,0" Maximum="80" Minimum="0" Name="coulombSlider" TickFrequency="1" Value="0" VerticalAlignment="Top" Width="206" ValueChanged="coulombSlider_ValueChanged"   />
         <Label Content="Coulomb" Height="28" HorizontalAlignment="Left" Margin="30,405,0,0" Name="label7" VerticalAlignment="Top" />
         <Label Content="coulomb" Height="28" HorizontalAlignment="Left" Margin="345,410,0,0" Name="coulombValue" VerticalAlignment="Top" />
+        <Button Content="400" Height="22" HorizontalAlignment="Left" Margin="345,242,0,0" Name="preset400" VerticalAlignment="Top" Width="38" Click="PresetClick" />
+        <Button Content="600" Height="22" HorizontalAlignment="Left" Margin="345,265,0,0" Name="preset600" VerticalAlignment="Top" Width="38" Click="PresetClick"/>
     </Grid>
 </Window>
