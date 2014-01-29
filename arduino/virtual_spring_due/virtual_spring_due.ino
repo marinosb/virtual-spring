@@ -36,36 +36,36 @@ void setup()
 {
   delay(1000);
   if(serial) Serial.begin(115200);
-  
+
   setupQam();
-  
+
   analogWriteResolution(12);
-  
+
   pinMode(torquePin, OUTPUT);
   analogWrite(torquePin, zeroTorque);
 }
 
 void setupQam()
 {
-        // Setup Quadrature Encoder with Marker
+  // Setup Quadrature Encoder with Marker
   REG_PMC_PCER0 = (1<<27); // activate clock for TC0
   REG_PMC_PCER0 = (1<<28); // activate clock for TC1
-  
+
   // select XC0 as clock source and set capture mode
   REG_TC0_CMR0 = 5; 
-  
-// activate quadrature encoder and position measure mode, no filters
-    REG_TC0_BMR = (1<<9)|(1<<8); //|(1<<12)
-    
-    // select XC0 as clock source and set capture mode
-    REG_TC0_CCR0 = (1<<2) | (1<<0) | (1<<14);
+
+  // activate quadrature encoder and position measure mode, no filters
+  REG_TC0_BMR = (1<<9)|(1<<8); //|(1<<12)
+
+  // select XC0 as clock source and set capture mode
+  REG_TC0_CCR0 = (1<<2) | (1<<0) | (1<<14);
 }
 
 void loop()
 {
   cachedMillis=millis();
   updatePosition();
-  
+
   calculateVelocity();
   if(autonomous) applyTorque();
   if(serial) performOutput();
@@ -91,27 +91,27 @@ void applyTorque()
   int linearComponent=((adjPos*16)/stiffness);
   int velocityComponent= (calculatedVelocityTicks*10*16)/dampingFactor;
   int coulombComponent=(sign(calculatedVelocityTicks)*coulombFactor);
-  
+
   int torque=max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 4094));
-  
+
   //safety checks
   if(cpuPosition>12000 || cpuPosition<-15500 || error !=0 || calculatedVelocityTicks>800)
   {
     overspeed=true;
   }
-  
+
   if(overspeed)
   {
     torque=zeroTorque;
   }
-  
+
   //save us the extra write
   if(torque!=lastTorque)
   {
     analogWrite(torquePin, torque);
     lastTorque=torque;
   }
-  
+
 }
 
 void calculateVelocity()
@@ -123,19 +123,19 @@ void calculateVelocity()
     calculatedVelocityTicks=(cpuPosition-velocityLastPos);
     velocityLastPos=cpuPosition;
   }
-  
+
 }
 
 void processSerialInput()
 {
- if(Serial.available()>0)
+  if(Serial.available()>0)
   {
     char x=Serial.read();
     if(x=='v')
     {
       int incomingDutyCycle = Serial.parseInt();
-     autonomous=false;
-     analogWrite(torquePin, incomingDutyCycle);
+      autonomous=false;
+      analogWrite(torquePin, incomingDutyCycle);
     }
     else if(x=='r')
     {
@@ -162,7 +162,7 @@ void processSerialInput()
     {
       coulombFactor=Serial.parseInt();
     }
-     Serial.read();  //newline
+    Serial.read();  //newline
   } 
 }
 
@@ -187,4 +187,3 @@ void performOutput()
     perfSpeedTicks=0;
   }
 }
-
