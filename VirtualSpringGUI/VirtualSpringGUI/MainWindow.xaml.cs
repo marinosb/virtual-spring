@@ -52,7 +52,7 @@ namespace VirtualSpringGUI
                     MessageBox.Show(ex.ToString(), "Error");
                 }
             }
-            else if(pr!=null)
+            else if (pr != null)
             {
                 pr.NewString -= pr_NewString;
                 pr.Stop();
@@ -75,7 +75,7 @@ namespace VirtualSpringGUI
                 MessageBox.Show("Could not connect to Arduino");
                 pr = null;
             }
-            
+
         }
 
 
@@ -86,17 +86,17 @@ namespace VirtualSpringGUI
 
         private void slider1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if(pr!=null) pr.Write(string.Format("v{0}", (int)slider1.Value));
+            if (pr != null) pr.Write(string.Format("v{0}", (int)slider1.Value));
         }
 
         private void resetOrigin_Clicked(object sender, RoutedEventArgs e)
         {
-            if(pr!=null) pr.Write("r\n");
+            if (pr != null) pr.Write("r\n");
         }
 
         private void stiffnessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            
+
             if (pr != null)
             {
                 this.stiffness.Content = stiffnessSlider.Value;
@@ -104,11 +104,12 @@ namespace VirtualSpringGUI
             }
         }
 
-        private void toggleButton1_Click(object sender, RoutedEventArgs e)
+        private void positionButtons_Click(object sender, RoutedEventArgs e)
         {
-            int positionOffset=0;
-            if(int.TryParse(this.positionOffsetTextBox.Text, out positionOffset))
+            int positionOffset = 0;
+            if (int.TryParse(this.positionOffsetTextBox.Text, out positionOffset))
             {
+                positionOffset = (sender == this.upButton) ? -positionOffset : +positionOffset;
                 pr.Write(string.Format("p{0}", positionOffset));
                 //this.positionOffsetTextBox.Text = "";
             }
@@ -146,47 +147,57 @@ namespace VirtualSpringGUI
                 ApplyValues(96, 575);
             }
         }
-        
+
 
 
         private void ApplyValues(int stiffness, int damping)
         {
-            new Task(() => {
+            new Task(() =>
+            {
                 Console.WriteLine("Starting stiffness:{0} damping:{1}", stiffness, damping);
-                bool stop=false;
+                bool stop = false;
                 while (!stop)
                 {
                     Thread.Sleep(100);
-                    Dispatcher.BeginInvoke(new Action(() => {
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
                         stop = (this.stiffnessSlider.Value == stiffness && this.dampingSlider.Value == damping);
-                            
+
 
                         this.stiffnessSlider.Value += Sign((int)(stiffness - this.stiffnessSlider.Value));
                         this.dampingSlider.Value += Sign((int)(damping - this.dampingSlider.Value));
                     }));
-                    
+
                 }
 
                 Console.WriteLine("Terminating stiffness:{0} damping:{1}", stiffness, damping);
-                Dispatcher.BeginInvoke(new Action(() => {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
                     this.preset400.IsEnabled = true;
                     this.preset600.IsEnabled = true;
                 }));
             }).Start();
-            
+
         }
 
         private int Sign(int value)
         {
             return value > 0 ? 1 : value < 0 ? -1 : 0;
         }
-        
+
         private volatile bool jumpstarting = false;
-        private volatile int initialCoulomb=0;
+        private volatile int initialCoulomb = 0;
         private void jumpstartButton_MouseDown(object sender, MouseButtonEventArgs e)
         {
             jumpstarting = true;
-            int coulomb = int.Parse(this.jumpstartTextBox.Text);
+            int coulomb = 0;
+
+            if (!int.TryParse(this.jumpstartTextBox.Text, out coulomb))
+            {
+                MessageBox.Show("Invalid Jumpstart Value");
+                return;
+            }
+
             int initialCoulomb = (int)this.coulombSlider.Value;
             new Task(() =>
             {
@@ -213,7 +224,7 @@ namespace VirtualSpringGUI
 
 
                 Console.WriteLine("Unrolling jumpstart with coulomb:{0}", coulomb);
-                stop=false;
+                stop = false;
                 while (!jumpstarting && !stop)
                 {
                     Thread.Sleep(100);
@@ -225,10 +236,10 @@ namespace VirtualSpringGUI
                     }));
 
                 }
-                
-                
-                Console.WriteLine("Terminated jumpstart with coulomb:{0}", coulomb);                
-                
+
+
+                Console.WriteLine("Terminated jumpstart with coulomb:{0}", coulomb);
+
             }).Start();
         }
 
@@ -236,6 +247,7 @@ namespace VirtualSpringGUI
         {
             jumpstarting = false;
         }
+
 
 
     }
