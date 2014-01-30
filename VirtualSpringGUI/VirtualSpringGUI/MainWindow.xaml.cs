@@ -180,6 +180,62 @@ namespace VirtualSpringGUI
         {
             return value > 0 ? 1 : value < 0 ? -1 : 0;
         }
+        
+        private volatile bool jumpstarting = false;
+        private volatile int initialCoulomb=0;
+        private void jumpstartButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            jumpstarting = true;
+            int coulomb = int.Parse(this.jumpstartTextBox.Text);
+            int initialCoulomb = (int)this.coulombSlider.Value;
+            new Task(() =>
+            {
+                Console.WriteLine("Starting jumpstart with coulomb:{0}", coulomb);
+                bool stop = false;
+                while (jumpstarting && !stop)
+                {
+                    Thread.Sleep(100);
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        stop = (this.coulombSlider.Value == coulomb);
+
+
+                        this.coulombSlider.Value += Sign((int)(coulomb - this.coulombSlider.Value));
+                    }));
+
+                }
+
+                Console.WriteLine("Reached jumpstart with coulomb:{0}", coulomb);
+                while (jumpstarting)
+                {
+                    Thread.Sleep(100);
+                }
+
+
+                Console.WriteLine("Unrolling jumpstart with coulomb:{0}", coulomb);
+                stop=false;
+                while (!jumpstarting && !stop)
+                {
+                    Thread.Sleep(100);
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        stop = (this.coulombSlider.Value == initialCoulomb);
+
+                        this.coulombSlider.Value += Sign((int)(initialCoulomb - this.coulombSlider.Value));
+                    }));
+
+                }
+                
+                
+                Console.WriteLine("Terminated jumpstart with coulomb:{0}", coulomb);                
+                
+            }).Start();
+        }
+
+        private void jumpstartButton_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            jumpstarting = false;
+        }
 
 
     }
