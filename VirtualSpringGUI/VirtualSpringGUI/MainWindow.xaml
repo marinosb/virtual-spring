@@ -20,7 +20,7 @@
         <Label Content="Stiffness" Height="28" HorizontalAlignment="Left" Margin="30,337,0,0" Name="label4" VerticalAlignment="Top" />
         <Button Content="Reset Origin" Focusable="False" Height="45" HorizontalAlignment="Left" Margin="183,242,0,0" VerticalAlignment="Top" Width="91" Click="resetOrigin_Clicked" />
         <Label Content="value" Height="28" HorizontalAlignment="Left" Margin="345,342,0,0" Name="stiffness" VerticalAlignment="Top" />
-        <TextBox Height="24" HorizontalAlignment="Left" Margin="165,443,0,0" Name="positionOffsetTextBox" VerticalAlignment="Top" Width="57" />
+        <TextBox Text="100" TextAlignment="Right" Height="24" HorizontalAlignment="Left" Margin="165,443,0,0" Name="positionOffsetTextBox" VerticalAlignment="Top" Width="57" />
         <Label Content="Position Adjustment" Height="28" HorizontalAlignment="Left" Margin="29,443,0,0" Name="label5" VerticalAlignment="Top" />
         
         <Slider Height="23" HorizontalAlignment="Left" IsSnapToTickEnabled="True" Margin="132,376,0,0" Maximum="10000" Minimum="1" Name="dampingSlider" TickFrequency="1" Value="5000" VerticalAlignment="Top" Width="206" ValueChanged="dampingSlider_ValueChanged" />
@@ -31,9 +31,11 @@
         <Label Content="coulomb" Height="28" HorizontalAlignment="Left" Margin="345,410,0,0" Name="coulombValue" VerticalAlignment="Top" />
         <Button Content="400" Height="22" HorizontalAlignment="Left" Margin="345,242,0,0" Name="preset400" VerticalAlignment="Top" Width="38" Click="PresetClick" />
         <Button Content="600" Height="22" HorizontalAlignment="Left" Margin="345,265,0,0" Name="preset600" VerticalAlignment="Top" Width="38" Click="PresetClick"/>
-        <TextBox Text="80" Height="23" HorizontalAlignment="Left" Margin="408,412,0,0" Name="jumpstartTextBox" VerticalAlignment="Top" Width="39" />
+        <TextBox TextAlignment="Right" Text="80" Height="23" HorizontalAlignment="Left" Margin="408,412,0,0" Name="jumpstartTextBox" VerticalAlignment="Top" Width="39" />
         <Button Content="Jumpstart" Height="23" HorizontalAlignment="Left" Margin="453,410,0,0" Name="jumpstartButton" VerticalAlignment="Top" Width="75" PreviewMouseDown="jumpstartButton_MouseDown" PreviewMouseUp="jumpstartButton_MouseUp" />
         <Button Content="Up" Height="23" HorizontalAlignment="Left" Margin="228,442,0,0" Name="upButton" VerticalAlignment="Top" Width="46" Click="positionButtons_Click" />
         <Button Content="Down" Height="23" HorizontalAlignment="Left" Margin="280,442,0,0" Name="downButton" VerticalAlignment="Top" Width="46" Click="positionButtons_Click" />
+        <CheckBox Content="Danger Zone" Height="16" HorizontalAlignment="Left" Margin="453,349,0,0" Name="dangerZoneCheckBox" VerticalAlignment="Top" />
+        <Button Content="Choke" Height="23" HorizontalAlignment="Left" Margin="453,377,0,0" Name="chokeButton" VerticalAlignment="Top" Width="75" Click="chokeButton_Click" />
     </Grid>
 </Window>

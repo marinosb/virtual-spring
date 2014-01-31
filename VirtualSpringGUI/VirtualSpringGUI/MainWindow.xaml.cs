@@ -94,13 +94,20 @@ namespace VirtualSpringGUI
             if (pr != null) pr.Write("r\n");
         }
 
+        int _safeStiffness = 50;
         private void stiffnessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            int newStiffness = (int)stiffnessSlider.Value;
+            if (newStiffness < _safeStiffness && this.dangerZoneCheckBox != null && this.dangerZoneCheckBox.IsChecked != true)
+            {
+                newStiffness = _safeStiffness;
+                stiffnessSlider.Value = newStiffness;
+            }
 
             if (pr != null)
             {
-                this.stiffness.Content = stiffnessSlider.Value;
-                pr.Write(string.Format("s{0}", (int)stiffnessSlider.Value));
+                this.stiffness.Content = newStiffness;
+                pr.Write(string.Format("s{0}", newStiffness));
             }
         }
 
@@ -116,12 +123,20 @@ namespace VirtualSpringGUI
             else MessageBox.Show("Invalid Position Offset");
         }
 
+        int _safeDamping = 450;
         private void dampingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            int newDamping = (int)dampingSlider.Value;
+            if (newDamping < _safeDamping && this.dangerZoneCheckBox!=null && this.dangerZoneCheckBox.IsChecked != true)
+            {
+                newDamping = _safeDamping;
+                dampingSlider.Value = newDamping;
+            }
+
             if (pr != null)
             {
-                this.dampingValue.Content = dampingSlider.Value;
-                pr.Write(string.Format("d{0}", (int)dampingSlider.Value));
+                this.dampingValue.Content = newDamping;
+                pr.Write(string.Format("d{0}", newDamping));
             }
         }
 
@@ -178,6 +193,28 @@ namespace VirtualSpringGUI
                 }));
             }).Start();
 
+        }
+
+        private void AnimateSlider(Slider slider, int stopValue, int delay, Action endAction)
+        {
+            new Task(() =>
+            {
+                Console.WriteLine("Starting animate slider:{0} to stop value:{1}", slider, stopValue);
+                bool stop = false;
+
+                while (!stop)
+                {
+                    Thread.Sleep(delay);
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        stop = (slider.Value == stopValue);
+
+                        slider.Value += Sign((int)(stopValue - slider.Value));
+                    }));
+                }
+                Console.WriteLine("Starting animate slider:{0} to stop value:{1}", slider, stopValue);
+                Dispatcher.BeginInvoke(endAction);
+            }).Start();
         }
 
         private int Sign(int value)
@@ -246,6 +283,14 @@ namespace VirtualSpringGUI
         private void jumpstartButton_MouseUp(object sender, MouseButtonEventArgs e)
         {
             jumpstarting = false;
+        }
+
+        private void chokeButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.chokeButton.IsEnabled = false;
+            AnimateSlider(this.coulombSlider, 0, 50, new Action(() => {
+                this.chokeButton.IsEnabled = true;
+            }));
         }
 
 
