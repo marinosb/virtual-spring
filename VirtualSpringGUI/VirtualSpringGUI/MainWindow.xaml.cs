@@ -288,8 +288,21 @@ namespace VirtualSpringGUI
         private void chokeButton_Click(object sender, RoutedEventArgs e)
         {
             this.chokeButton.IsEnabled = false;
+            this.coulomb40Preset.IsEnabled = false;
             AnimateSlider(this.coulombSlider, 0, 50, new Action(() => {
                 this.chokeButton.IsEnabled = true;
+                this.coulomb40Preset.IsEnabled = true;
+            }));
+        }
+
+        private void coulomb40Preset_Click(object sender, RoutedEventArgs e)
+        {
+            this.chokeButton.IsEnabled = false;
+            this.coulomb40Preset.IsEnabled = false;
+            AnimateSlider(this.coulombSlider, 40, 50, new Action(() =>
+            {
+                this.chokeButton.IsEnabled = true;
+                this.coulomb40Preset.IsEnabled = true;
             }));
         }
 
