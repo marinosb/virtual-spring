@@ -140,12 +140,20 @@ namespace VirtualSpringGUI
             }
         }
 
+        int _safeCoulomb = 100;
         private void coulombSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            int newCoulomb = (int)coulombSlider.Value;
+            if (newCoulomb > _safeCoulomb && this.dangerZoneCheckBox != null && this.dangerZoneCheckBox.IsChecked != true)
+            {
+                newCoulomb = _safeCoulomb;
+                coulombSlider.Value = newCoulomb;
+            }
+
             if (pr != null)
             {
                 this.coulombValue.Content = coulombSlider.Value;
-                pr.Write(string.Format("c{0}", (int)coulombSlider.Value));
+                pr.Write(string.Format("c{0}", newCoulomb));
             }
         }
 
