@@ -159,8 +159,7 @@ namespace VirtualSpringGUI
 
         private void PresetClick(object sender, RoutedEventArgs e)
         {
-            this.preset400.IsEnabled = false;
-            this.preset600.IsEnabled = false;
+            SetPresets(false);
             if (sender == this.preset400)
             {
                 ApplyValues(140, 530);
@@ -169,8 +168,28 @@ namespace VirtualSpringGUI
             {
                 ApplyValues(96, 575);
             }
+            else if (sender == this.preset1000)
+            {
+                ApplyValues(50, 575);
+            }
+            else if (sender == this.preset1600)
+            {
+                ApplyValues(33, 575);
+            }
+            else if (sender == this.preset2000)
+            {
+                ApplyValues(26, 575);
+            }
         }
 
+        private void SetPresets(bool enable)
+        {
+            this.preset600.IsEnabled = enable;
+            this.preset400.IsEnabled = enable;
+            this.preset1000.IsEnabled = enable;
+            this.preset1600.IsEnabled = enable;
+            this.preset2000.IsEnabled = enable;
+        }
 
 
         private void ApplyValues(int stiffness, int damping)
@@ -196,8 +215,7 @@ namespace VirtualSpringGUI
                 Console.WriteLine("Terminating stiffness:{0} damping:{1}", stiffness, damping);
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    this.preset400.IsEnabled = true;
-                    this.preset600.IsEnabled = true;
+                    SetPresets(true);
                 }));
             }).Start();
 

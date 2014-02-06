@@ -109,9 +109,6 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="spring.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="favicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

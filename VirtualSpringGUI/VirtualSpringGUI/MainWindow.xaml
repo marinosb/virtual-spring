@@ -31,22 +31,21 @@
         <Label Content="coulomb" Height="28" HorizontalAlignment="Left" Margin="345,365,0,0" Name="coulombValue" VerticalAlignment="Top" />
         <Button Content="400" Height="22" HorizontalAlignment="Left" Margin="345,197,0,0" Name="preset400" VerticalAlignment="Top" Width="38" Click="PresetClick" />
         <Button Content="600" Height="22" HorizontalAlignment="Left" Margin="345,220,0,0" Name="preset600" VerticalAlignment="Top" Width="38" Click="PresetClick"/>
+        <Button Content="1000" Height="22" HorizontalAlignment="Left" Margin="389,220,0,0" Name="preset1000" VerticalAlignment="Top" Width="38" Click="PresetClick"/>
+        <Button Content="1600" Height="22" HorizontalAlignment="Left" Margin="446,220,0,0" Name="preset1600" VerticalAlignment="Top" Width="38" Click="PresetClick"/>
+        <Button Content="2000" Height="22" HorizontalAlignment="Left" Margin="490,220,0,0" Name="preset2000" VerticalAlignment="Top" Width="38" Click="PresetClick"/>
         <TextBox TextAlignment="Right" Text="80" Height="23" HorizontalAlignment="Left" Margin="408,367,0,0" Name="jumpstartTextBox" VerticalAlignment="Top" Width="39" />
         <Button Content="Jumpstart" Height="23" HorizontalAlignment="Left" Margin="453,365,0,0" Name="jumpstartButton" VerticalAlignment="Top" Width="75" PreviewMouseDown="jumpstartButton_MouseDown" PreviewMouseUp="jumpstartButton_MouseUp" />
         <Button Content="Up" Height="23" HorizontalAlignment="Left" Margin="228,397,0,0" Name="upButton" VerticalAlignment="Top" Width="46" Click="positionButtons_Click" />
         <Button Content="Down" Height="23" HorizontalAlignment="Left" Margin="280,397,0,0" Name="downButton" VerticalAlignment="Top" Width="46" Click="positionButtons_Click" />
         <CheckBox Content="Danger Zone" Height="16" HorizontalAlignment="Left" Margin="453,304,0,0" Name="dangerZoneCheckBox" VerticalAlignment="Top" />
         <Button Content="Choke" Height="23" HorizontalAlignment="Left" Margin="453,332,0,0" Name="chokeButton" VerticalAlignment="Top" Width="75" Click="chokeButton_Click" />
-        <GroupBox Header="Presets" Height="82" HorizontalAlignment="Left" Margin="334,175,0,0" Name="groupBox1" VerticalAlignment="Top" Width="200">
-            <Grid>
-                <Button Content="Coulomb40" Height="22" HorizontalAlignment="Left" Margin="49,5,0,0" Name="coulomb40Preset" VerticalAlignment="Top" Width="68" Click="coulomb40Preset_Click" />
-            </Grid>
-        </GroupBox>
         <Label Content="Read Instructions Before Handling" Height="55" HorizontalAlignment="Left" Margin="334,0,0,0" Name="label8" VerticalAlignment="Top" Width="413" Foreground="Red" FontSize="24" FontWeight="ExtraBold" />
         <Image Height="258" HorizontalAlignment="Right" Margin="0,168,0,0" Name="image1"  VerticalAlignment="Top" Width="150" >
             <Image.Source>
                 <BitmapImage UriSource="spring.jpg"/>
             </Image.Source>
         </Image>
+        <Button Content="Coulomb40" Height="22" HorizontalAlignment="Left" Margin="389,197,0,0" Name="coulomb40Preset" VerticalAlignment="Top" Width="68" Click="coulomb40Preset_Click" />
     </Grid>
 </Window>
