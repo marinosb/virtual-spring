@@ -94,7 +94,7 @@ namespace VirtualSpringGUI
             if (pr != null) pr.Write("r\n");
         }
 
-        int _safeStiffness = 50;
+        int _safeStiffness = 25;
         private void stiffnessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int newStiffness = (int)stiffnessSlider.Value;
@@ -140,7 +140,7 @@ namespace VirtualSpringGUI
             }
         }
 
-        int _safeCoulomb = 100;
+        int _safeCoulomb = 120;
         private void coulombSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int newCoulomb = (int)coulombSlider.Value;
@@ -285,6 +285,9 @@ namespace VirtualSpringGUI
                     Thread.Sleep(100);
                 }
 
+                Dispatcher.BeginInvoke(new Action(() => {
+                    this.jumpstartButton.IsEnabled = false;
+                }));
 
                 Console.WriteLine("Unrolling jumpstart with coulomb:{0}", coulomb);
                 stop = false;
@@ -300,6 +303,10 @@ namespace VirtualSpringGUI
 
                 }
 
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    this.jumpstartButton.IsEnabled = true;
+                }));
 
                 Console.WriteLine("Terminated jumpstart with coulomb:{0}", coulomb);
 
