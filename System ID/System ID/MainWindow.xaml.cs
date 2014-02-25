@@ -25,8 +25,17 @@ namespace System_ID
         {
             InitializeComponent();
             slider1.ValueChanged += slider1_ValueChanged;
+            zeroSlider.ValueChanged += new RoutedPropertyChangedEventHandler<double>(zeroSlider_ValueChanged);
 
             InitializePortReader();
+
+            this.Closing += new System.ComponentModel.CancelEventHandler(MainWindow_Closing);
+        }
+
+
+        void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            pr.Stop();
         }
 
         private void InitializePortReader()
@@ -60,10 +69,21 @@ namespace System_ID
             Write(string.Format("m{0}", slider1.Value));
         }
 
+
+        void zeroSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Write(string.Format("z{0}", zeroSlider.Value));
+        }
+
         private void Write(string data)
         {
             pr.Write(data);
             Console.WriteLine(data);
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            Write("r");
         }
     }
 }

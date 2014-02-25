@@ -1004,7 +1004,7 @@ int lookup[]={0	,
 int precomputeMultiplier=1000000;
 
 int torquePin=DAC0;
-int zeroTorque=1900;
+int zeroTorque=1956;
 
 unsigned long cachedMillis;
 
@@ -1012,6 +1012,10 @@ int period=1000;
 int amplitudeMultiplier=10;
 
 unsigned long nextCommMillis=0;
+
+int cpuPosition=0;
+int zeroPosition=0;
+bool overspeed=false;
 
 void setup() {
   delay(1000);
@@ -1021,25 +1025,53 @@ void setup() {
 
   pinMode(torquePin, OUTPUT);
   analogWrite(torquePin, zeroTorque);
+  
+  setupQam();
+}
+
+void setupQam()
+{
+  // Setup Quadrature Encoder with Marker
+  REG_PMC_PCER0 = (1<<27); // activate clock for TC0
+  REG_PMC_PCER0 = (1<<28); // activate clock for TC1
+
+  // select XC0 as clock source and set capture mode
+  REG_TC0_CMR0 = 5; 
+
+  // activate quadrature encoder and position measure mode, no filters
+  REG_TC0_BMR = (1<<9)|(1<<8); //|(1<<12)
+
+  // select XC0 as clock source and set capture mode
+  REG_TC0_CCR0 = (1<<2) | (1<<0) | (1<<14);
 }
 
 void loop() {
   // put your main code here, to run repeatedly: 
   
   cachedMillis=millis();
+  updatePosition();
   
-//  int angle=(((cachedMillis%period)-(period/2))/(period/2))*(PI/2);
-//  int torque=zeroTorque-sin(angle)*amplitude;
+  if(cpuPosition>10000 || cpuPosition<-10000)
+  {
+    overspeed=true;
+  }
   
   int index=cachedMillis%period;
   int torque=(lookup[index]*amplitudeMultiplier/precomputeMultiplier)+zeroTorque;
   
+  if(overspeed)
+  {
+    torque=zeroTorque;
+  }
+  
   analogWrite(torquePin, torque);
   
-  //if(cachedMillis>nextCommMillis)
-  //{
-    processIncoming();
-  //}
+  processIncoming();
+}
+
+void updatePosition()
+{
+  cpuPosition=((int)REG_TC0_CV0)-zeroPosition;
 }
 
 void processIncoming()
@@ -1050,21 +1082,36 @@ void processIncoming()
     if(x=='m')
     {
       int newAmplitudeMultiplier= Serial.parseInt();
-      if(newAmplitudeMultiplier>0 && newAmplitudeMultiplier < 400)
+      if(newAmplitudeMultiplier>0 && newAmplitudeMultiplier < 2000)
       {
         amplitudeMultiplier=newAmplitudeMultiplier;
       }
     }
+    else if(x=='z')
+    {
+      int newZeroTorque= Serial.parseInt();
+      if(newZeroTorque>1000 && newZeroTorque < 3000)
+      {
+        zeroTorque=newZeroTorque;
+      }
+    }
     else if(x=='r')
     {
-      amplitudeMultiplier=1;
+      zeroPosition=cpuPosition+zeroPosition;
+      cpuPosition=0;
+      overspeed=false;
     }
+
     Serial.read();//newline
   }
 
     if(cachedMillis%1000==0)
     {
       Serial.print(amplitudeMultiplier);
+      Serial.print(" ");
+      Serial.print(zeroTorque);
+      Serial.print(" ");
+      Serial.print(cpuPosition);
       Serial.print("\n");
     }
     
