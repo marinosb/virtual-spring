@@ -8,7 +8,8 @@ boolean autonomous=true;
 
 int rotationDirection=0;
 
-int zeroTorque=1950;
+//For intinal position
+int zeroTorque=1900;
 
 int stiffness=90;
 int dampingFactor=10000;
@@ -95,7 +96,7 @@ void applyTorque()
   int torque=max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 4094));
 
   //safety checks
-  if(cpuPosition>12000 || cpuPosition<-15500 || error !=0 || calculatedVelocityTicks>800)
+  if(cpuPosition>12000 || cpuPosition<-15500 || error !=0 || calculatedVelocityTicks>900)
   {
     overspeed=true;
   }
