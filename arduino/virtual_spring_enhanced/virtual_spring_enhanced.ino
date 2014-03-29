@@ -106,26 +106,34 @@ void applyTorque()
   double velocityComponent=0;
   double coulombComponent=0;
   double quadComponent=0;
+  double cubeComponent=0;
   
-  if(sign(ydot)>0)
+  if(sign(ydot)<0) //down is positive
   {
-    coulombComponent=16.001;
-    velocityComponent=23.248 * ydot;
-    quadComponent=-3.5729 * (ydot * ydot);
+    coulombComponent=13.178;
+    velocityComponent=36.254 * ydot;
+    quadComponent=-19.32 * (ydot * ydot);
+    cubeComponent= 5.3714*(ydot * ydot * ydot);
   }
   else
   {
-    coulombComponent=-11.201;
-    velocityComponent=13.801 * ydot;
-    quadComponent=-0.4351 * (ydot * ydot);
+    coulombComponent=-12.732;
+    velocityComponent=8.5209 * ydot;
+    quadComponent=-5.945 * (ydot * ydot);
+    cubeComponent= -1.7811 *(ydot * ydot *ydot);
   }
   
-  double output=-linearComponent*16.0/((double)stiffness)+velocityComponent/((double)dampingFactor) +quadComponent/((double)quadraticFactor) +coulombComponent/(double)coulombFactor;
+  double output=
+  -linearComponent*16.0/((double)stiffness)
+  +velocityComponent/((double)dampingFactor) 
+  +quadComponent/((double)quadraticFactor * 625.0) 
+  +cubeComponent/((double)quadraticFactor * 15625.0) 
+  +coulombComponent/(double)coulombFactor;
   
   int torque=max(1,min(zeroTorque+output, 4094));
 
   //safety checks
-  if(torque==4094 || torque==1 || cpuPosition>12000 || cpuPosition<-15500 || error !=0 || calculatedVelocityTicks>900)
+  if(torque==4094 || torque==1 || cpuPosition>7000 || cpuPosition<-9500 || error !=0 || calculatedVelocityTicks>900)
   {
     overspeed=true;
   }
