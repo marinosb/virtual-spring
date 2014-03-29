@@ -23,6 +23,7 @@ unsigned long lastVelocitySampleMillis;
 int velocitySampleTime=10;
 
 int coulombFactor=1000;
+int quadraticFactor=1000;
 
 boolean overspeed=false;
 
@@ -83,10 +84,10 @@ void updatePosition()
   //error=(REG_TC0_QISR>>2)&0x1;
 }
 
-int sign(int x)
-{
-  return x>0?1:(x<0?-1:0);
-}
+//int sign(int x)
+//{
+//  return x>0?1:(x<0?-1:0);
+//}
 
 int sign(double x)
 {
@@ -104,24 +105,27 @@ void applyTorque()
   double linearComponent=y;
   double velocityComponent=0;
   double coulombComponent=0;
+  double quadComponent=0;
   
   if(sign(ydot)>0)
   {
     coulombComponent=16.001;
     velocityComponent=23.248 * ydot;
+    quadComponent=-3.5729 * (ydot * ydot);
   }
   else
   {
     coulombComponent=-11.201;
     velocityComponent=13.801 * ydot;
+    quadComponent=-0.4351 * (ydot * ydot);
   }
   
-  double output=-linearComponent*10.0/((double)stiffness)+velocityComponent/((double)dampingFactor)+coulombComponent/(double)coulombFactor;
+  double output=-linearComponent*16.0/((double)stiffness)+velocityComponent/((double)dampingFactor) +quadComponent/((double)quadraticFactor) +coulombComponent/(double)coulombFactor;
   
   int torque=max(1,min(zeroTorque+output, 4094));
 
   //safety checks
-  if(cpuPosition>12000 || cpuPosition<-15500 || error !=0 || calculatedVelocityTicks>900)
+  if(torque==4094 || torque==1 || cpuPosition>12000 || cpuPosition<-15500 || error !=0 || calculatedVelocityTicks>900)
   {
     overspeed=true;
   }
@@ -187,6 +191,10 @@ void processSerialInput()
     else if(x=='c')
     {
       coulombFactor=Serial.parseInt();
+    }
+    else if(x=='q')
+    {
+      quadraticFactor=Serial.parseInt();
     }
     Serial.read();  //newline
   } 
