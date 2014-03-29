@@ -11,8 +11,8 @@ int rotationDirection=0;
 //For intinal position
 int zeroTorque=1900;
 
-int stiffness=90;
-int dampingFactor=10000;
+int stiffness=600;
+int dampingFactor=1000;
 
 int lastTorque=zeroTorque;
 
@@ -22,7 +22,7 @@ int velocityLastPos;
 unsigned long lastVelocitySampleMillis;
 int velocitySampleTime=10;
 
-int coulombFactor=0;
+int coulombFactor=1000;
 
 boolean overspeed=false;
 
@@ -32,6 +32,9 @@ int cpuPosition=0;
 int error=0;
 
 unsigned long cachedMillis;
+
+#define forward 0
+#define reverse 1
 
 void setup()
 {
@@ -85,15 +88,37 @@ int sign(int x)
   return x>0?1:(x<0?-1:0);
 }
 
+int sign(double x)
+{
+  return x>0?1:(x<0?-1:0);
+}
+
 void applyTorque()
 {
   //scale: 1/1
   int adjPos=cpuPosition;
-  int linearComponent=((adjPos*16)/stiffness);
-  int velocityComponent= (calculatedVelocityTicks*10*16)/dampingFactor;
-  int coulombComponent=(sign(calculatedVelocityTicks)*coulombFactor);
-
-  int torque=max(1,min(zeroTorque-linearComponent+velocityComponent+coulombComponent, 4094));
+  
+  double ydot=calculatedVelocityTicks;
+  double y=adjPos;
+  
+  double linearComponent=y;
+  double velocityComponent=0;
+  double coulombComponent=0;
+  
+  if(sign(ydot)>0)
+  {
+    coulombComponent=16.001;
+    velocityComponent=23.248 * ydot;
+  }
+  else
+  {
+    coulombComponent=-11.201;
+    velocityComponent=13.801 * ydot;
+  }
+  
+  double output=-linearComponent*10.0/((double)stiffness)+velocityComponent/((double)dampingFactor)+coulombComponent/(double)coulombFactor;
+  
+  int torque=max(1,min(zeroTorque+output, 4094));
 
   //safety checks
   if(cpuPosition>12000 || cpuPosition<-15500 || error !=0 || calculatedVelocityTicks>900)
@@ -174,9 +199,11 @@ void performOutput()
   unsigned long currentMillis=cachedMillis;
   if(currentMillis-lastTriggerMillis>triggerIntervalMillis)
   {
-    if(perfSpeedTicks<100000) overspeed=true;
+    if(perfSpeedTicks<1000) overspeed=true;
     if(overspeed) Serial.print("!ERR ");
     Serial.print(cpuPosition);
+    Serial.print(" T:");
+    Serial.print(lastTorque);
     Serial.print(" D:");
     Serial.print(rotationDirection);
     Serial.print(" S:");
