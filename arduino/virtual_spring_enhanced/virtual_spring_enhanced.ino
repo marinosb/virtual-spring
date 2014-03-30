@@ -125,9 +125,9 @@ void applyTorque()
   
   double output=
   -linearComponent*16.0/((double)stiffness)
-  +velocityComponent/((double)dampingFactor *1) 
-  +quadComponent/((double)quadraticFactor * 25.0) 
-  +cubeComponent/((double)quadraticFactor * 625.0) 
+  +velocityComponent/((double)dampingFactor *25.0) 
+  +quadComponent/((double)quadraticFactor * 6250.0) 
+  +cubeComponent/((double)quadraticFactor * 1562500.0) 
   +coulombComponent/(double)coulombFactor;
   
   int torque=max(1,min(zeroTorque+output, 4094));
