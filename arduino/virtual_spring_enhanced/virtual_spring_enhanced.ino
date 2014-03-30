@@ -117,17 +117,17 @@ void applyTorque()
   }
   else
   {
-    coulombComponent=-12.732;
-    velocityComponent=8.5209 * ydot;
-    quadComponent=-5.945 * (ydot * ydot);
-    cubeComponent= -1.7811 *(ydot * ydot *ydot);
+    coulombComponent=-12.767;
+    velocityComponent=25.334 * ydot;
+    quadComponent=11.309 * (ydot * ydot);
+    cubeComponent= 3.7317 *(ydot * ydot *ydot);
   }
   
   double output=
   -linearComponent*16.0/((double)stiffness)
-  +velocityComponent/((double)dampingFactor) 
-  +quadComponent/((double)quadraticFactor * 625.0) 
-  +cubeComponent/((double)quadraticFactor * 15625.0) 
+  +velocityComponent/((double)dampingFactor *1) 
+  +quadComponent/((double)quadraticFactor * 25.0) 
+  +cubeComponent/((double)quadraticFactor * 625.0) 
   +coulombComponent/(double)coulombFactor;
   
   int torque=max(1,min(zeroTorque+output, 4094));
