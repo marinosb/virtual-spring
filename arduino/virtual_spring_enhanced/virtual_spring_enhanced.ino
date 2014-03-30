@@ -22,7 +22,7 @@ int velocityLastPos;
 unsigned long lastVelocitySampleMillis;
 int velocitySampleTime=10;
 
-int coulombFactor=1000;
+int coulombFactor=0;
 int quadraticFactor=1000;
 
 boolean overspeed=false;
@@ -110,25 +110,25 @@ void applyTorque()
   
   if(sign(ydot)<0) //down is positive
   {
-    coulombComponent=13.178;
+    coulombComponent=-13.178;
     velocityComponent=36.254 * ydot;
-    quadComponent=-19.32 * (ydot * ydot);
+    quadComponent=19.32 * (ydot * ydot);
     cubeComponent= 5.3714*(ydot * ydot * ydot);
   }
   else
   {
-    coulombComponent=-12.767;
+    coulombComponent=12.767;
     velocityComponent=25.334 * ydot;
-    quadComponent=11.309 * (ydot * ydot);
+    quadComponent=-11.309 * (ydot * ydot);
     cubeComponent= 3.7317 *(ydot * ydot *ydot);
   }
   
   double output=
   -linearComponent*16.0/((double)stiffness)
-  +velocityComponent/((double)dampingFactor *25.0) 
-  +quadComponent/((double)quadraticFactor * 6250.0) 
-  +cubeComponent/((double)quadraticFactor * 1562500.0) 
-  +coulombComponent/(double)coulombFactor;
+  +velocityComponent/((double)dampingFactor *2.50) 
+  +quadComponent/((double)quadraticFactor * 625.0) 
+  +cubeComponent/((double)quadraticFactor * 156250.0) 
+  +coulombComponent*(double)coulombFactor;
   
   int torque=max(1,min(zeroTorque+output, 4094));
 
@@ -173,6 +173,7 @@ void processSerialInput()
     {
       int incomingDutyCycle = Serial.parseInt();
       autonomous=false;
+      lastTorque=incomingDutyCycle;
       analogWrite(torquePin, incomingDutyCycle);
     }
     else if(x=='r')
