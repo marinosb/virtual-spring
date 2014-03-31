@@ -24,7 +24,7 @@
         <Label Content="Position Adjustment" Height="28" HorizontalAlignment="Left" Margin="29,442,0,0" Name="label5" VerticalAlignment="Top" />
         
         <Slider Height="23" HorizontalAlignment="Left" IsSnapToTickEnabled="True" Margin="132,331,0,0" Maximum="1500" Minimum="500" Name="periodSlider" TickFrequency="1" Value="1000" VerticalAlignment="Top" Width="206" ValueChanged="periodSlider_ValueChanged" />
-        <Label Content="Period" Height="28" HorizontalAlignment="Left" Margin="30,326,0,0" Name="label6" VerticalAlignment="Top"  />
+        <Label Content="Period" Height="28" HorizontalAlignment="Left" Margin="30,326,0,0" Name="label6" VerticalAlignment="Top" Foreground="Red" />
         <Label Content="period" Height="28" HorizontalAlignment="Left" Margin="345,331,0,0" Name="periodSliderValue" VerticalAlignment="Top" />
         <Button Content="400" Height="22" HorizontalAlignment="Left" Margin="345,197,0,0" Name="preset400" VerticalAlignment="Top" Width="38" Click="PresetClick" IsEnabled="False" />
         <Button Content="600" Height="22" HorizontalAlignment="Left" Margin="345,220,0,0" Name="preset600" VerticalAlignment="Top" Width="38" Click="PresetClick" IsEnabled="False" />
@@ -37,15 +37,17 @@
         <Button Content="Down" Height="23" HorizontalAlignment="Left" Margin="280,441,0,0" Name="downButton" VerticalAlignment="Top" Width="46" Click="positionButtons_Click" />
         <CheckBox Content="Danger Zone" Height="16" HorizontalAlignment="Left" Margin="453,304,0,0" Name="dangerZoneCheckBox" VerticalAlignment="Top" IsChecked="True"/>
         <Button Content="Choke" Height="23" HorizontalAlignment="Left" Margin="453,332,0,0" Name="chokeButton" VerticalAlignment="Top" Width="75" Click="chokeButton_Click" IsEnabled="False" />
-        <Label Content="EXPERIMENTAL - DANGER" Height="55" HorizontalAlignment="Left" Margin="367,0,0,0" Name="label8" VerticalAlignment="Top" Width="380" Foreground="Red" FontSize="24" FontWeight="ExtraBold" />
+        <Label Content="DONT CHANGE LIVE" Height="55" HorizontalAlignment="Left" Margin="367,0,0,0" Name="label8" VerticalAlignment="Top" Width="380" Foreground="Red" FontSize="24" FontWeight="ExtraBold" />
         <Image Height="258" HorizontalAlignment="Right" Margin="0,168,0,0" Name="image1"  VerticalAlignment="Top" Width="150" >
             <Image.Source>
                 <BitmapImage UriSource="spring.jpg"/>
             </Image.Source>
         </Image>
         <Button Content="Coulomb40" Height="22" HorizontalAlignment="Left" Margin="389,197,0,0" Name="coulomb40Preset" VerticalAlignment="Top" Width="68" Click="coulomb40Preset_Click" IsEnabled="False" />
-        <Slider Height="23" HorizontalAlignment="Left" IsSnapToTickEnabled="True" Margin="132,367,0,0" Maximum="200" Minimum="0" Name="amplitudeSlider" TickFrequency="1" Value="0" VerticalAlignment="Top" Width="206" ValueChanged="amplitudeSlider_ValueChanged" />
+        <Slider Height="23" HorizontalAlignment="Left" IsSnapToTickEnabled="True" Margin="132,367,0,0" Maximum="500" Minimum="0" Name="amplitudeSlider" TickFrequency="1" Value="0" VerticalAlignment="Top" Width="206" ValueChanged="amplitudeSlider_ValueChanged" />
         <Label Content="Amplitude" Height="28" HorizontalAlignment="Left" Margin="30,362,0,0" Name="label9" VerticalAlignment="Top" Foreground="Red" />
         <Label Content="ampl" Height="28" HorizontalAlignment="Left" Margin="345,367,0,0" Name="amplitudeSliderValue" VerticalAlignment="Top" />
+        <Label Content="1/frequency" Height="28" HorizontalAlignment="Left" Margin="30,340,0,0" Name="label7" VerticalAlignment="Top" />
+        <Label Content="NO LIVE" Height="28" HorizontalAlignment="Left" Margin="72,326,0,0" Name="label10" VerticalAlignment="Top" />
     </Grid>
 </Window>
