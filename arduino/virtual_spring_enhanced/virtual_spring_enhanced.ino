@@ -257,16 +257,6 @@ void performOutput()
     Serial.print(calculatedVelocityTicks);
     Serial.print(" H:");
     Serial.print(perfSpeedTicks);
-    Serial.print(" H:");
-    Serial.print(c1Factor);
-    Serial.print(" H:");
-    Serial.print(c2Factor);
-    Serial.print(" H:");
-    Serial.print(c3Factor);
-    Serial.print(" H:");
-    Serial.print(coulombFactor);
-    Serial.print(" H:");
-    Serial.print(stiffness);
     Serial.print("\n");
     lastTriggerMillis=currentMillis;
     perfSpeedTicks=0;
