@@ -1,15 +1,11 @@
 
 int zeroPosition=0;
 int cpuPosition=0;
-unsigned long lastVelocitySampleMillis;
-int calculatedVelocityTicks;
-int velocityLastPos;
-int velocitySampleTime=5; //5ms
 int torque=0;
 int rotationDirection=0;
 
 unsigned long lastTriggerMillis=0;
-int triggerIntervalMillis=1000;
+int triggerIntervalMillis=5;
 
 
 
@@ -21,6 +17,9 @@ void setup() {
   Serial.begin(115200);
   
   setupQam();
+  
+  analogReadResolution(12);
+
 }
 
 void loop()
@@ -29,7 +28,6 @@ void loop()
   readTorque();
   updatePosition();
   
-  calculateVelocity();
   performOutput();
   processSerialInput();
 }
@@ -52,7 +50,7 @@ void setupQam()
 
 void readTorque()
 {
-  torque=analogRead(A0);
+  torque=analogRead(A7);
 }
 
 void updatePosition()
@@ -61,19 +59,6 @@ void updatePosition()
   rotationDirection=((REG_TC0_QISR>>8)&0x1);
   //error=(REG_TC0_QISR>>2)&0x1;
 }
-
-void calculateVelocity()
-{
-  unsigned long currentTimeMillis=cachedMillis;
-  if( abs(currentTimeMillis-lastVelocitySampleMillis) >velocitySampleTime )
-  {
-    lastVelocitySampleMillis=currentTimeMillis;
-    calculatedVelocityTicks=(cpuPosition-velocityLastPos);
-    velocityLastPos=cpuPosition;
-  }
-
-}
-
 
 void processSerialInput()
 {
@@ -84,7 +69,6 @@ void processSerialInput()
     if(x=='r')
     {
       zeroPosition=cpuPosition+zeroPosition;
-      velocityLastPos=0;
       cpuPosition=0;
     }
   }
@@ -98,14 +82,8 @@ void performOutput()
   if(currentMillis-lastTriggerMillis>triggerIntervalMillis)
   {
     Serial.print(cpuPosition);
-    Serial.print(" T:");
+    Serial.print(",");
     Serial.print(torque);
-    Serial.print(" D:");
-    Serial.print(rotationDirection);
-    Serial.print(" S:");
-    Serial.print(calculatedVelocityTicks);
-    Serial.print(" H:");
-    Serial.print(perfSpeedTicks);
     Serial.print("\n");
     lastTriggerMillis=currentMillis;
     perfSpeedTicks=0;

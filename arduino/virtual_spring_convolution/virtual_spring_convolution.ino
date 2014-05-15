@@ -9,10 +9,9 @@ boolean autonomous=true;
 int rotationDirection=0;
 
 //For intinal position
-int zeroTorque=2000;
+int zeroTorque=1950;
 
 int stiffness=600;
-int dampingFactor=1000;
 
 int lastTorque=zeroTorque;
 
@@ -75,7 +74,6 @@ void loop()
   cachedMillis=millis();
   updatePosition();
 
-  calculateVelocity();
   if(autonomous) applyTorque();
   if(serial) performOutput();
   if(serial) processSerialInput();
@@ -136,18 +134,6 @@ void applyTorque()
 
 }
 
-void calculateVelocity()
-{
-  unsigned long currentTimeMillis=cachedMillis;
-  if( abs(currentTimeMillis-lastVelocitySampleMillis) >velocitySampleTime )  
-  {
-    lastVelocitySampleMillis=currentTimeMillis;
-    calculatedVelocityTicks=(cpuPosition-velocityLastPos);
-    velocityLastPos=cpuPosition;
-  }
-
-}
-
 void processSerialInput()
 {
   if(Serial.available()>0)
@@ -176,10 +162,6 @@ void processSerialInput()
     {
       int posOffset=Serial.parseInt();
       zeroPosition+=posOffset;
-    }
-    else if(x=='d')
-    {
-      dampingFactor=Serial.parseInt();
     }
     else if(x=='c')
     {
@@ -211,8 +193,6 @@ void performOutput()
     Serial.print(lastTorque);
     Serial.print(" D:");
     Serial.print(rotationDirection);
-    Serial.print(" S:");
-    Serial.print(calculatedVelocityTicks);
     Serial.print(" H:");
     Serial.print(perfSpeedTicks);
     Serial.print("\n");

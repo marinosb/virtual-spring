@@ -86,7 +86,11 @@ namespace VirtualSpringGUI
 
         private void slider1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (pr != null) pr.Write(string.Format("v{0}", (int)slider1.Value));
+            if (pr != null)
+            {
+                this.overrideSliderValue.Content = slider1.Value;
+                pr.Write(string.Format("v{0}", (int)slider1.Value));
+            }
         }
 
         private void resetOrigin_Clicked(object sender, RoutedEventArgs e)

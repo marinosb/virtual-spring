@@ -9,7 +9,7 @@ boolean autonomous=true;
 int rotationDirection=0;
 
 //For intinal position
-int zeroTorque=1900;
+int zeroTorque=1950;
 
 int stiffness=600;
 int dampingFactor=1000;
@@ -31,6 +31,8 @@ int zeroPosition=0;
 int cpuPosition=0;
 
 int error=0;
+
+int torqueOverride=zeroTorque;
 
 unsigned long cachedMillis;
 
@@ -72,7 +74,7 @@ void loop()
   updatePosition();
 
   calculateVelocity();
-  if(autonomous) applyTorque();
+  applyTorque();
   if(serial) performOutput();
   if(serial) processSerialInput();
 }
@@ -98,42 +100,52 @@ void applyTorque()
 {
   //scale: 1/1
   int adjPos=cpuPosition;
-  
+
   double ydot=calculatedVelocityTicks;
   double y=adjPos;
-  
+
   double linearComponent=y;
   double velocityComponent=0;
   double coulombComponent=0;
   double quadComponent=0;
   double cubeComponent=0;
-  
-  if(sign(ydot)<0) //down is positive
+
+  int torque=zeroTorque;
+
+  if(autonomous)
   {
-    coulombComponent=-13.178;
-    velocityComponent=36.254 * ydot;
-    quadComponent=19.32 * (ydot * ydot);
-    cubeComponent= 5.3714*(ydot * ydot * ydot);
+    if(sign(ydot)<0) //down is positive
+    {
+      coulombComponent=-13.178;
+      velocityComponent=36.254 * ydot;
+      quadComponent=19.32 * (ydot * ydot);
+      cubeComponent= 5.3714*(ydot * ydot * ydot);
+    }
+    else
+    {
+      coulombComponent=12.767;
+      velocityComponent=25.334 * ydot;
+      quadComponent=-11.309 * (ydot * ydot);
+      cubeComponent= 3.7317 *(ydot * ydot *ydot);
+    }
+
+    double output=
+      -linearComponent*16.0/((double)stiffness)
+      +velocityComponent/((double)dampingFactor *2.50) 
+        +quadComponent/((double)quadraticFactor * 625.0) 
+          +cubeComponent/((double)quadraticFactor * 156250.0) 
+            +coulombComponent*(double)coulombFactor/10.0;
+            
+
+    torque=max(1,min(zeroTorque+output, 4094)); 
   }
   else
   {
-    coulombComponent=12.767;
-    velocityComponent=25.334 * ydot;
-    quadComponent=-11.309 * (ydot * ydot);
-    cubeComponent= 3.7317 *(ydot * ydot *ydot);
+    torque=torqueOverride;
   }
-  
-  double output=
-  -linearComponent*16.0/((double)stiffness)
-  +velocityComponent/((double)dampingFactor *2.50) 
-  +quadComponent/((double)quadraticFactor * 625.0) 
-  +cubeComponent/((double)quadraticFactor * 156250.0) 
-  +coulombComponent*(double)coulombFactor/10.0;
-  
-  int torque=max(1,min(zeroTorque+output, 4094));
 
   //safety checks
-  if(torque==4094 || torque==1 || cpuPosition>7000 || cpuPosition<-9500 || error !=0 || calculatedVelocityTicks>900)
+  if(torque>=4000 || torque<=100 || cpuPosition>7000 || cpuPosition<-9500 || error !=0 || calculatedVelocityTicks>900)
   {
     overspeed=true;
   }
@@ -173,14 +185,14 @@ void processSerialInput()
     {
       int incomingDutyCycle = Serial.parseInt();
       autonomous=false;
-      lastTorque=incomingDutyCycle;
-      analogWrite(torquePin, incomingDutyCycle);
+      torqueOverride=incomingDutyCycle;
     }
     else if(x=='r')
     {
       zeroPosition=cpuPosition+zeroPosition;
       velocityLastPos=0;
       cpuPosition=0;
+      torqueOverride=zeroTorque;
       autonomous=true;
       overspeed=false;
     }
@@ -232,3 +244,4 @@ void performOutput()
     perfSpeedTicks=0;
   }
 }
+
