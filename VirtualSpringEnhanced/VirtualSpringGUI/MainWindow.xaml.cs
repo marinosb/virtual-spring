@@ -21,11 +21,20 @@ namespace VirtualSpringGUI
     /// </summary>
     public partial class MainWindow : Window
     {
+        Dictionary<Slider, Tuple<Label, string, string>> sliderActions = new Dictionary<Slider, Tuple<Label, string, string>>();
+
         private PortReader pr;
         public MainWindow()
         {
             InitializeComponent();
             this.startButton.IsChecked = true;
+            sliderActions.Add(this.coulombSlider, new Tuple<Label,string, string>(this.coulombLabel,"c{0}", "{0}%"));
+            sliderActions.Add(this.kSlider, new Tuple<Label, string, string>(this.kLabel, "s{0}", "{0}"));
+            sliderActions.Add(this.c1Slider, new Tuple<Label, string, string>(this.c1Label, "d{0}", "{0}%"));
+            sliderActions.Add(this.c2Slider, new Tuple<Label, string, string>(this.c2Label, "q{0}", "{0}%"));
+            sliderActions.Add(this.c3Slider, new Tuple<Label, string, string>(this.c3Label, "b{0}", "{0}%"));
+
+            sliderActions.Add(this.overrideSlider, new Tuple<Label, string, string>(this.overrideSliderLabel, "v{0}", "{0}/4096"));
         }
 
         void pr_NewString(object sender, PortEventArgs e)
@@ -84,34 +93,27 @@ namespace VirtualSpringGUI
             this.startButton.IsChecked = false;
         }
 
-        private void slider1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (pr != null)
-            {
-                this.overrideSliderValue.Content = slider1.Value;
-                pr.Write(string.Format("v{0}", (int)slider1.Value));
-            }
-        }
 
         private void resetOrigin_Clicked(object sender, RoutedEventArgs e)
         {
             if (pr != null) pr.Write("r\n");
         }
 
-        int _safeStiffness = 25;
-        private void stiffnessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+
+        private void genericSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            int newStiffness = (int)stiffnessSlider.Value;
-            if (newStiffness < _safeStiffness && this.dangerZoneCheckBox != null && this.dangerZoneCheckBox.IsChecked != true)
+            Slider slider = (Slider)sender;
+            int newValue = (int)slider.Value;
+            Tuple<Label, string, string> actionParameters;
+            if(!sliderActions.TryGetValue(slider, out actionParameters))
             {
-                newStiffness = _safeStiffness;
-                stiffnessSlider.Value = newStiffness;
+                return;
             }
 
             if (pr != null)
             {
-                this.stiffness.Content = newStiffness;
-                pr.Write(string.Format("s{0}", newStiffness));
+                actionParameters.Item1.Content = string.Format(actionParameters.Item3,newValue);
+                pr.Write(string.Format(actionParameters.Item2, newValue));
             }
         }
 
@@ -127,51 +129,11 @@ namespace VirtualSpringGUI
             else MessageBox.Show("Invalid Position Offset");
         }
 
-        int _safeDamping = 450;
-        private void dampingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            int newDamping = (int)dampingSlider.Value;
-            if (newDamping < _safeDamping && this.dangerZoneCheckBox!=null && this.dangerZoneCheckBox.IsChecked != true)
-            {
-                newDamping = _safeDamping;
-                dampingSlider.Value = newDamping;
-            }
 
-            if (pr != null)
-            {
-                this.dampingValue.Content = newDamping;
-                pr.Write(string.Format("d{0}", newDamping));
-            }
-        }
+        
 
-        int _safeCoulomb = 120;
-        private void coulombSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            int newCoulomb = (int)coulombSlider.Value;
-            if (newCoulomb > _safeCoulomb && this.dangerZoneCheckBox != null && this.dangerZoneCheckBox.IsChecked != true)
-            {
-                newCoulomb = _safeCoulomb;
-                coulombSlider.Value = newCoulomb;
-            }
 
-            if (pr != null)
-            {
-                this.coulombValue.Content = coulombSlider.Value;
-                pr.Write(string.Format("c{0}", newCoulomb));
-            }
-        }
-
-        private void quadraticSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            int newQuad=(int)quadraticSlider.Value;
-            if (pr != null)
-            {
-                this.quadraticSliderValue.Content=newQuad;
-                pr.Write(string.Format("q{0}", newQuad));
-            }
-
-        }
-
+        #region animations
         private void PresetClick(object sender, RoutedEventArgs e)
         {
             SetPresets(false);
@@ -218,11 +180,11 @@ namespace VirtualSpringGUI
                     Thread.Sleep(100);
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        stop = (this.stiffnessSlider.Value == stiffness && this.dampingSlider.Value == damping);
+                        stop = (this.kSlider.Value == stiffness && this.c1Slider.Value == damping);
 
 
-                        this.stiffnessSlider.Value += Sign((int)(stiffness - this.stiffnessSlider.Value));
-                        this.dampingSlider.Value += Sign((int)(damping - this.dampingSlider.Value));
+                        this.kSlider.Value += Sign((int)(stiffness - this.kSlider.Value));
+                        this.c1Slider.Value += Sign((int)(damping - this.c1Slider.Value));
                     }));
 
                 }
@@ -354,6 +316,7 @@ namespace VirtualSpringGUI
             }));
         }
 
+        #endregion
 
 
     }

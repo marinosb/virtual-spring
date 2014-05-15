@@ -10,9 +10,10 @@ int rotationDirection=0;
 
 //For intinal position
 int zeroTorque=1950;
+int zeroGravity=1735;
 
-int stiffness=600;
-int dampingFactor=1000;
+double stiffness=600;
+
 
 int lastTorque=zeroTorque;
 
@@ -20,10 +21,12 @@ int lastTorque=zeroTorque;
 int calculatedVelocityTicks;
 int velocityLastPos;
 unsigned long lastVelocitySampleMillis;
-int velocitySampleTime=10;
+int velocitySampleTime=5;
 
-int coulombFactor=0;
-int quadraticFactor=1000;
+double coulombFactor=0;
+double c1Factor=0;
+double c2Factor=0;
+double c3Factor=0;
 
 boolean overspeed=false;
 
@@ -100,44 +103,48 @@ void applyTorque()
 {
   //scale: 1/1
   int adjPos=cpuPosition;
-
-  double ydot=calculatedVelocityTicks;
+  
+  double yDot=((double)calculatedVelocityTicks)/25.0;
   double y=adjPos;
 
-  double linearComponent=y;
-  double velocityComponent=0;
   double coulombComponent=0;
-  double quadComponent=0;
-  double cubeComponent=0;
+  double linearComponent=y;
+  double yComponent=0;
+  double yDotComponent=0;
+  double yDot2Component=0;
+  double yDot3Component=0;
 
   int torque=zeroTorque;
 
   if(autonomous)
   {
-    if(sign(ydot)<0) //down is positive
+    double yDot2=yDot*yDot;
+    double yDot3=yDot2*yDot;
+    
+    if(sign(yDot)>0) //down
     {
-      coulombComponent=-13.178;
-      velocityComponent=36.254 * ydot;
-      quadComponent=19.32 * (ydot * ydot);
-      cubeComponent= 5.3714*(ydot * ydot * ydot);
+      coulombComponent=14.121;
+      yDotComponent=14.022 * yDot;
+      yDot2Component=0.308 * yDot2;
+      yDot3Component=-0.3307* yDot3;
     }
-    else
+    else //up
     {
-      coulombComponent=12.767;
-      velocityComponent=25.334 * ydot;
-      quadComponent=-11.309 * (ydot * ydot);
-      cubeComponent= 3.7317 *(ydot * ydot *ydot);
+      coulombComponent=-14.121;
+      yDotComponent=14.022 * yDot;
+      yDot2Component=-0.308 * yDot2;
+      yDot3Component=-0.3307 * yDot3;
     }
 
     double output=
-      -linearComponent*16.0/((double)stiffness)
-      +velocityComponent/((double)dampingFactor *2.50) 
-        +quadComponent/((double)quadraticFactor * 625.0) 
-          +cubeComponent/((double)quadraticFactor * 156250.0) 
-            +coulombComponent*(double)coulombFactor/10.0;
+      -linearComponent*16.0/(stiffness)
+      +yDotComponent*(c1Factor) *3.79252
+        +yDot2Component*(c2Factor)  *3.79252
+          +yDot3Component*(c3Factor) *3.79252
+            +coulombComponent*(coulombFactor) *3.79252;
             
 
-    torque=max(1,min(zeroTorque+output, 4094)); 
+    torque=max(1,min(1804.02 + output, 4094)); 
   }
   else
   {
@@ -207,18 +214,29 @@ void processSerialInput()
     }
     else if(x=='d')
     {
-      dampingFactor=Serial.parseInt();
+      c1Factor=getPercentageFromInput();
     }
     else if(x=='c')
     {
-      coulombFactor=Serial.parseInt();
+      coulombFactor=getPercentageFromInput();
     }
     else if(x=='q')
     {
-      quadraticFactor=Serial.parseInt();
+      c2Factor=getPercentageFromInput();
+    }
+    else if(x=='b')
+    {
+      c3Factor=getPercentageFromInput();
     }
     Serial.read();  //newline
   } 
+}
+
+double getPercentageFromInput()
+{
+  int value=Serial.parseInt();
+  double percentage=((double)value)/100.0;
+  return percentage;
 }
 
 int perfSpeedTicks=0;
@@ -239,6 +257,16 @@ void performOutput()
     Serial.print(calculatedVelocityTicks);
     Serial.print(" H:");
     Serial.print(perfSpeedTicks);
+    Serial.print(" H:");
+    Serial.print(c1Factor);
+    Serial.print(" H:");
+    Serial.print(c2Factor);
+    Serial.print(" H:");
+    Serial.print(c3Factor);
+    Serial.print(" H:");
+    Serial.print(coulombFactor);
+    Serial.print(" H:");
+    Serial.print(stiffness);
     Serial.print("\n");
     lastTriggerMillis=currentMillis;
     perfSpeedTicks=0;
