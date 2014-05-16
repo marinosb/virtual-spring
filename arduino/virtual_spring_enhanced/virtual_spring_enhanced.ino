@@ -12,7 +12,7 @@ int rotationDirection=0;
 int zeroTorque=1950;
 int zeroGravity=1735;
 
-double stiffness=600;
+double stiffness=16.0/600.0;
 
 
 int lastTorque=zeroTorque;
@@ -137,7 +137,7 @@ void applyTorque()
     }
 
     double output=
-      -linearComponent*16.0/(stiffness)
+      -linearComponent*stiffness
       +yDotComponent*(c1Factor) *3.79252
         +yDot2Component*(c2Factor)  *3.79252
           +yDot3Component*(c3Factor) *3.79252
@@ -205,7 +205,8 @@ void processSerialInput()
     }
     else if(x=='s')
     {
-      stiffness = Serial.parseInt();
+      double stiffnessIncoming=Serial.parseInt();
+      stiffness = 16.0/stiffnessIncoming;
     }
     else if(x=='p')
     {

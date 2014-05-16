@@ -116,6 +116,7 @@ namespace DataCapture
 
         private void UpdateSlider(int position)
         {
+            position = -position;
             maxPosition = Math.Max(maxPosition, position + 100);
             minPosition = Math.Min(minPosition, position - 100);
 
