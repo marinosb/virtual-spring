@@ -1,0 +1,19 @@
+﻿<Window x:Class="DataCapture.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="408" Width="525">
+    <Grid>
+        <ToggleButton Focusable="False" Content="Connect" Height="45" HorizontalAlignment="Left" Margin="23,139,0,0" Name="startButton" VerticalAlignment="Top" Width="91" Checked="start_toggled" Unchecked="start_toggled" />
+        <Button Content="Reset Origin" Focusable="False" Height="45" HorizontalAlignment="Left" Margin="120,139,0,0" VerticalAlignment="Top" Width="91" Name="resetButton" Click="resetButton_Click" />
+        <Label Content="0" Height="25" Margin="12,332,311,0" Name="dataLabel" VerticalAlignment="Top" />
+        <ToggleButton Content="Record" Focusable="False" Height="45" HorizontalAlignment="Left" Margin="23,202,0,0" Name="recordButton" VerticalAlignment="Top" Width="91" Checked="recordButton_Checked" Unchecked="recordButton_Unchecked"     />
+        <Label Content="0" Height="27" Margin="120,84,229,0" Name="meanTorqueLabel" VerticalAlignment="Top" />
+        <Button Content="Record 60" Focusable="False" Height="45" HorizontalAlignment="Left" Margin="120,202,0,0" Name="record60Button" VerticalAlignment="Top" Width="91" Click="record60Button_Click" />
+        <Label Content="0" Height="28" HorizontalAlignment="Left" Margin="120,16,0,0" Name="positionLabel" VerticalAlignment="Top" Width="151" />
+        <Label Content="0" Height="28" HorizontalAlignment="Left" Margin="120,50,0,0" Name="torqueLabel" VerticalAlignment="Top" Width="151" />
+        <Label Content="Position" Height="26" HorizontalAlignment="Left" Margin="12,18,0,0" Name="label1" VerticalAlignment="Top" Width="102" />
+        <Label Content="Torque" Height="26" HorizontalAlignment="Left" Margin="12,50,0,0" Name="label2" VerticalAlignment="Top" Width="102" />
+        <Label Content="Mean Torque" Height="26" HorizontalAlignment="Left" Margin="12,81,0,0" Name="label3" VerticalAlignment="Top" Width="102" />
+        <Slider HorizontalAlignment="Right" Margin="0,41,38,37" Width="30" Orientation="Vertical" Name="positionSlider" IsEnabled="False" />
+    </Grid>
+</Window>
