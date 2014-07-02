@@ -5,12 +5,14 @@
         Closing="Window_Closing">
     <Grid >
         <Grid.RowDefinitions>
+            <RowDefinition Height="476*" />
+            <RowDefinition Height="97*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="747*" />
             <ColumnDefinition Width="39*" />
         </Grid.ColumnDefinitions>
-        <Label FontSize="60" Grid.ColumnSpan="2" Height="90" Margin="49,79,39,0" Name="positionLabel" VerticalAlignment="Top" FontFamily="Courier New" Content="0" />
+        <Label FontSize="60" Height="90" Margin="49,79,39,0" Name="positionLabel" VerticalAlignment="Top" FontFamily="Courier New" Content="0" />
         <Label Content="Position:" Height="28" HorizontalAlignment="Left" Margin="59,45,0,0" Name="label1" VerticalAlignment="Top" />
         <ToggleButton Focusable="False" Content="Connect" Height="45" HorizontalAlignment="Left" Margin="59,197,0,0" Name="startButton" VerticalAlignment="Top" Width="91" Checked="start_toggled" Unchecked="start_toggled" />
         <Label Content="EVCK" Height="39" HorizontalAlignment="Left" Margin="49,0,0,0" Name="label2" VerticalAlignment="Top" Width="289" FontSize="22" Foreground="#FF18A700" FontWeight="SemiBold" />
@@ -20,8 +22,8 @@
         <Label Content="Stiffness" Height="28" HorizontalAlignment="Left" Margin="30,292,0,0" Name="label4" VerticalAlignment="Top" />
         <Button Content="Reset Origin" Focusable="False" Height="45" HorizontalAlignment="Left" Margin="183,197,0,0" VerticalAlignment="Top" Width="91" Click="resetOrigin_Clicked" />
         <Label Content="1000" Height="28" HorizontalAlignment="Left" Margin="345,297,0,0" Name="kLabel" VerticalAlignment="Top" />
-        <TextBox Text="100" TextAlignment="Right" Height="24" HorizontalAlignment="Left" Margin="165,482,0,0" Name="positionOffsetTextBox" VerticalAlignment="Top" Width="57" />
-        <Label Content="Position Adjustment" Height="28" HorizontalAlignment="Left" Margin="29,482,0,0" Name="label5" VerticalAlignment="Top" />
+        <TextBox Text="100" TextAlignment="Right" Height="24" HorizontalAlignment="Left" Margin="157,25,0,0" Name="positionOffsetTextBox" VerticalAlignment="Top" Width="57" Grid.Row="1" />
+        <Label Content="Position Adjustment" Height="28" HorizontalAlignment="Left" Margin="21,25,0,0" Name="label5" VerticalAlignment="Top" Grid.Row="1" />
 
         <Slider Height="23" HorizontalAlignment="Left" IsSnapToTickEnabled="True" Margin="132,331,0,0" Maximum="100" Minimum="0" Name="c1Slider" TickFrequency="1" Value="0" VerticalAlignment="Top" Width="206" ValueChanged="genericSliderValueChanged" />
         <Label Content="c1" Height="28" HorizontalAlignment="Left" Margin="30,326,0,0" Name="label6" VerticalAlignment="Top"  />
@@ -36,8 +38,8 @@
         <Button Content="2000" Height="22" HorizontalAlignment="Left" Margin="490,220,0,0" Name="preset2000" VerticalAlignment="Top" Width="38" Click="PresetClick" IsEnabled="False" />
         <TextBox TextAlignment="Right" Text="80" Height="23" HorizontalAlignment="Left" Margin="408,367,0,0" Name="jumpstartTextBox" VerticalAlignment="Top" Width="39" IsEnabled="False" />
         <Button Content="Jumpstart" Height="23" HorizontalAlignment="Left" Margin="453,365,0,0" Name="jumpstartButton" VerticalAlignment="Top" Width="75" PreviewMouseDown="jumpstartButton_MouseDown" PreviewMouseUp="jumpstartButton_MouseUp" IsEnabled="False" />
-        <Button Content="Up" Height="23" HorizontalAlignment="Left" Margin="228,481,0,0" Name="upButton" VerticalAlignment="Top" Width="46" Click="positionButtons_Click" />
-        <Button Content="Down" Height="23" HorizontalAlignment="Left" Margin="280,481,0,0" Name="downButton" VerticalAlignment="Top" Width="46" Click="positionButtons_Click" />
+        <Button Content="Up" Height="23" HorizontalAlignment="Left" Margin="220,24,0,0" Name="upButton" VerticalAlignment="Top" Width="46" Click="positionButtons_Click" Grid.Row="1" />
+        <Button Content="Down" Height="23" HorizontalAlignment="Left" Margin="272,24,0,0" Name="downButton" VerticalAlignment="Top" Width="46" Click="positionButtons_Click" Grid.Row="1" />
         <CheckBox Content="Danger Zone" Height="16" HorizontalAlignment="Left" Margin="453,304,0,0" Name="dangerZoneCheckBox" VerticalAlignment="Top" IsChecked="True"/>
         <Button Content="Choke" Height="23" HorizontalAlignment="Left" Margin="453,332,0,0" Name="chokeButton" VerticalAlignment="Top" Width="75" Click="chokeButton_Click" IsEnabled="False" />
         <Label Content="EXPERIMENTAL - DANGER" Height="55" HorizontalAlignment="Left" Margin="367,0,0,0" Name="label8" VerticalAlignment="Top" Width="380" Foreground="Red" FontSize="24" FontWeight="ExtraBold" />
@@ -54,5 +56,8 @@
         <Slider Height="23" HorizontalAlignment="Left" IsSnapToTickEnabled="True" Margin="133,393,0,0" Maximum="100" Minimum="0" Name="c3Slider" TickFrequency="1" Value="0" VerticalAlignment="Top" Width="206" ValueChanged="genericSliderValueChanged" />
         <Label Content="c3" Height="28" HorizontalAlignment="Left" Margin="31,388,0,0" Name="label10" VerticalAlignment="Top" />
         <Label Content="0%" Height="28" HorizontalAlignment="Left" Margin="346,393,0,0" Name="c3Label" VerticalAlignment="Top" />
+        <Slider Height="23" HorizontalAlignment="Left" IsSnapToTickEnabled="True" Margin="132,452,0,0" Maximum="200" Minimum="0" Name="cLinearSlider" TickFrequency="1" Value="0" VerticalAlignment="Top" Width="412" ValueChanged="genericSliderValueChanged" />
+        <Label Content="c linear" Height="28" HorizontalAlignment="Left" Margin="30,447,0,0" VerticalAlignment="Top" Foreground="Blue" />
+        <Label Content="0%" Height="28" HorizontalAlignment="Left" Margin="550,452,0,0" Name="cLinearLabel" VerticalAlignment="Top" Grid.RowSpan="2" Foreground="Blue" />
     </Grid>
 </Window>

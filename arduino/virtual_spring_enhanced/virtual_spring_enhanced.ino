@@ -27,6 +27,8 @@ double coulombFactor=0;
 double c1Factor=0;
 double c2Factor=0;
 double c3Factor=0;
+double cLinearFactor=0;
+
 
 boolean overspeed=false;
 
@@ -145,7 +147,7 @@ void applyTorque()
 
     double output=
       -linearComponent*stiffness
-      +yDotComponent*(c1Factor) *5.64
+      +yDotComponent*(c1Factor-cLinearFactor) *5.64
         +yDot2Component*(c2Factor)  *5.64
           +yDot3Component*(c3Factor) *5.64
             +coulombComponent*(coulombFactor) *5.64;
@@ -249,6 +251,11 @@ void processSerialInput()
     else if(x=='b')
     {
       c3Factor=getPercentageFromInput();
+    }
+    else if(x=='l')
+    {
+      cLinearFactor=getPercentageFromInput();
+      
     }
     Serial.read();  //newline
   } 

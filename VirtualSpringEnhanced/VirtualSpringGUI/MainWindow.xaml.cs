@@ -33,6 +33,7 @@ namespace VirtualSpringGUI
             sliderActions.Add(this.c1Slider, new Tuple<Label, string, string>(this.c1Label, "d{0}", "{0}%"));
             sliderActions.Add(this.c2Slider, new Tuple<Label, string, string>(this.c2Label, "q{0}", "{0}%"));
             sliderActions.Add(this.c3Slider, new Tuple<Label, string, string>(this.c3Label, "b{0}", "{0}%"));
+            sliderActions.Add(this.cLinearSlider, new Tuple<Label, string, string>(this.cLinearLabel, "l{0}", "{0}%"));
 
             sliderActions.Add(this.overrideSlider, new Tuple<Label, string, string>(this.overrideSliderLabel, "v{0}", "{0}/4096"));
         }
