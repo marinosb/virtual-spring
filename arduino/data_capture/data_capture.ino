@@ -8,6 +8,12 @@ unsigned long lastTriggerMillis=0;
 int triggerIntervalMillis=5;
 
 
+// For velocity measurement
+int calculatedVelocityTicks;
+int velocityLastPos;
+unsigned long lastVelocitySampleMillis;
+double velocitySampleTime=5;
+
 
 unsigned long cachedMillis=0;
 
@@ -27,7 +33,7 @@ void loop()
   cachedMillis=millis();
   readTorque();
   updatePosition();
-  
+  calculateVelocity();
   performOutput();
   processSerialInput();
 }
@@ -79,14 +85,26 @@ void performOutput()
 {  
   perfSpeedTicks++;
   unsigned long currentMillis=cachedMillis;
-  if(currentMillis-lastTriggerMillis>triggerIntervalMillis)
+  if((currentMillis-lastTriggerMillis)>=triggerIntervalMillis)
   {
-    Serial.print(cpuPosition);
+    //Serial.print(cpuPosition);
+    Serial.print(calculatedVelocityTicks);
     Serial.print(",");
     Serial.print(torque);
     Serial.print("\n");
     lastTriggerMillis=currentMillis;
     perfSpeedTicks=0;
+  }
+}
+
+void calculateVelocity()
+{
+  unsigned long currentTimeMillis=cachedMillis;
+  if( abs(currentTimeMillis-lastVelocitySampleMillis) >= velocitySampleTime )  
+  {
+    lastVelocitySampleMillis=currentTimeMillis;
+    calculatedVelocityTicks=(cpuPosition-velocityLastPos); 
+    velocityLastPos=cpuPosition;
   }
 }
 

@@ -11,9 +11,9 @@ int rotationDirection=0;
 //For intinal position
 int zeroTorque=1950;
 int zeroGravity=1735;
+int nextVelocityTicks = 0;
 
 double stiffness=16.0/600.0;
-
 
 int lastTorque=zeroTorque;
 
@@ -21,7 +21,7 @@ int lastTorque=zeroTorque;
 int calculatedVelocityTicks;
 int velocityLastPos;
 unsigned long lastVelocitySampleMillis;
-int velocitySampleTime=5;
+int velocitySampleTime=1;
 
 double coulombFactor=0;
 double c1Factor=0;
@@ -32,6 +32,9 @@ boolean overspeed=false;
 
 int zeroPosition=0;
 int cpuPosition=0;
+int previousCpuPosition = 0;
+int positions[10] = {0};
+int memoryCounter = 0;
 
 int error=0;
 
@@ -75,17 +78,21 @@ void loop()
 {
   cachedMillis=millis();
   updatePosition();
-
+ 
   calculateVelocity();
   applyTorque();
+  previousCpuPosition = cpuPosition;
   if(serial) performOutput();
   if(serial) processSerialInput();
 }
 
 void updatePosition()
 {
+  
   cpuPosition=((int)REG_TC0_CV0)-zeroPosition;
   rotationDirection=((REG_TC0_QISR>>8)&0x1);
+ 
+ 
   //error=(REG_TC0_QISR>>2)&0x1;
 }
 
@@ -104,7 +111,7 @@ void applyTorque()
   //scale: 1/1
   int adjPos=cpuPosition;
   
-  double yDot=((double)calculatedVelocityTicks)/25.0;
+  double yDot=((double)calculatedVelocityTicks)/25;
   double y=adjPos;
 
   double coulombComponent=0;
@@ -123,28 +130,28 @@ void applyTorque()
     
     if(sign(yDot)>0) //down
     {
-      coulombComponent=14.121;
-      yDotComponent=14.022 * yDot;
-      yDot2Component=0.308 * yDot2;
-      yDot3Component=-0.3307* yDot3;
+      coulombComponent=9.85;
+      yDotComponent=27.337 * yDot;
+      yDot2Component=-11.7495 * yDot2;
+      yDot3Component=1.0143* yDot3;
     }
     else //up
     {
-      coulombComponent=-14.121;
-      yDotComponent=14.022 * yDot;
-      yDot2Component=-0.308 * yDot2;
-      yDot3Component=-0.3307 * yDot3;
+      coulombComponent=-10.12;
+      yDotComponent=27.337 * yDot;
+      yDot2Component=11.7495 * yDot2;
+      yDot3Component=1.1143 * yDot3;
     }
 
     double output=
       -linearComponent*stiffness
-      +yDotComponent*(c1Factor) *3.79252
-        +yDot2Component*(c2Factor)  *3.79252
-          +yDot3Component*(c3Factor) *3.79252
-            +coulombComponent*(coulombFactor) *3.79252;
+      +yDotComponent*(c1Factor) *5.64
+        +yDot2Component*(c2Factor)  *5.64
+          +yDot3Component*(c3Factor) *5.64
+            +coulombComponent*(coulombFactor) *5.64;
             
 
-    torque=max(1,min(1804.02 + output, 4094)); 
+    torque=max(1,min(1841.02 + output, 4094)); 
   }
   else
   {
@@ -152,7 +159,7 @@ void applyTorque()
   }
 
   //safety checks
-  if(torque>=4000 || torque<=100 || cpuPosition>7000 || cpuPosition<-9500 || error !=0 || calculatedVelocityTicks>900)
+  if(torque>=4000 || torque<=100 || cpuPosition>11000 || cpuPosition<-11500 || error !=0 || calculatedVelocityTicks>1900)
   {
     overspeed=true;
   }
@@ -174,12 +181,26 @@ void applyTorque()
 void calculateVelocity()
 {
   unsigned long currentTimeMillis=cachedMillis;
-  if( abs(currentTimeMillis-lastVelocitySampleMillis) >velocitySampleTime )  
+  if( abs(currentTimeMillis-lastVelocitySampleMillis) >= velocitySampleTime )  
   {
     lastVelocitySampleMillis=currentTimeMillis;
     calculatedVelocityTicks=(cpuPosition-velocityLastPos);
+   
     velocityLastPos=cpuPosition;
+    
+    //int cpuDelta = cpuPosition - previousCpuPosition;
+    //nextVelocityTicks = calculatedVelocityTicks - 6 *cpuDelta*velocitySampleTime;
+    //calculatedVelocityTicks = nextVelocityTicks*4; //should be checked !!!!
   }
+  
+  
+//  unsigned long currentTimeMillis=cachedMillis;
+//  if( abs(currentTimeMillis-lastVelocitySampleMillis) >velocitySampleTime )  
+//  {
+//    lastVelocitySampleMillis=currentTimeMillis;
+//    calculatedVelocityTicks=(cpuPosition-velocityLastPos);
+//    velocityLastPos=cpuPosition;
+//  }
 
 }
 
@@ -245,7 +266,7 @@ void performOutput()
 {  
   perfSpeedTicks++;
   unsigned long currentMillis=cachedMillis;
-  if(currentMillis-lastTriggerMillis>triggerIntervalMillis)
+  if((currentMillis-lastTriggerMillis)>=triggerIntervalMillis)
   {
     if(perfSpeedTicks<1000) overspeed=true;
     if(overspeed) Serial.print("!ERR ");
