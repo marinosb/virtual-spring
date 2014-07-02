@@ -15,5 +15,11 @@
         <Label Content="Torque" Height="26" HorizontalAlignment="Left" Margin="12,50,0,0" Name="label2" VerticalAlignment="Top" Width="102" />
         <Label Content="Mean Torque" Height="26" HorizontalAlignment="Left" Margin="12,81,0,0" Name="label3" VerticalAlignment="Top" Width="102" />
         <Slider HorizontalAlignment="Right" Margin="0,41,38,37" Width="30" Orientation="Vertical" Name="positionSlider" IsEnabled="False" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="23,288,0,0" Name="fileToken1" VerticalAlignment="Top" Width="66" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="105,288,0,0" Name="fileToken2" VerticalAlignment="Top" Width="62" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="183,288,0,0" Name="fileToken3" VerticalAlignment="Top" Width="62" />
+        <Label Content="K" Height="23" HorizontalAlignment="Left" Margin="22,263,0,0" Name="label4" VerticalAlignment="Top" Width="67" />
+        <Label Content="harness ζ" Height="23" HorizontalAlignment="Left" Margin="105,263,0,0" Name="label5" VerticalAlignment="Top" Width="67" />
+        <Label Content="model freq" Height="23" HorizontalAlignment="Left" Margin="183,263,0,0" Name="label6" VerticalAlignment="Top" Width="67" />
     </Grid>
 </Window>

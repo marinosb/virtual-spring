@@ -141,6 +141,10 @@ namespace DataCapture
 
         private void recordButton_Checked(object sender, RoutedEventArgs e)
         {
+            if (FileTokenNull())
+            {
+                MessageBox.Show("One of the parameters in the filename is empty", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
             this.data = new List<string>();
             this.torques = new List<int>();
         }
@@ -151,7 +155,7 @@ namespace DataCapture
             this.data=null;
             this.torques = null;
             this.meanTorqueLabel.Content = "";
-            string filename=string.Format(@"C:\Users\MREL-USER\Documents\virtual_spring\data\{0:yyyyMMdd-HHmmss}.csv", DateTime.Now);
+            string filename=string.Format(@"C:\Users\MREL-USER\Documents\virtual_spring\data\{0:yyyyMMdd_HHmmss}-k{1}-z{2}-f{3}.csv", DateTime.Now, this.fileToken1.Text, this.fileToken2.Text, this.fileToken3.Text);
             File.WriteAllLines(filename, dataCopy);
         }
 
@@ -184,6 +188,27 @@ namespace DataCapture
             });
             t.Start();
             
+        }
+
+        //Not used
+        private void fileToken_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(this.fileToken1.Text) || string.IsNullOrWhiteSpace(this.fileToken2.Text) || string.IsNullOrWhiteSpace(this.fileToken3.Text))
+            {
+                this.recordButton.IsEnabled = false;
+                this.record60Button.IsEnabled = false;
+            }
+            else
+            {
+                this.recordButton.IsEnabled = true;
+                this.record60Button.IsEnabled = true;
+            }
+
+        }
+
+        private bool FileTokenNull()
+        {
+            return (string.IsNullOrWhiteSpace(this.fileToken1.Text) || string.IsNullOrWhiteSpace(this.fileToken2.Text) || string.IsNullOrWhiteSpace(this.fileToken3.Text));
         }
     }
 }
